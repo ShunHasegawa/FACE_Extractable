@@ -51,9 +51,7 @@ qqline(residuals.lm(Fml_pre))
 ############
 
 bxplts(value= "nh", data= subsetD(extr, post))
-bxplts(value= "nh", ofst=5, data= subsetD(extr, post))
-bxplts(value= "nh", ofst=10, data= subsetD(extr, post))
-# sqrt seems better
+  # sqrt seems better
 
 # different random factor strucures
 m1 <- lme(sqrt(nh) ~ co2 * time, random = ~1|ring/plot, data = subsetD(extr, post))
