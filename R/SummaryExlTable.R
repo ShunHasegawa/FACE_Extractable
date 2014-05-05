@@ -20,7 +20,7 @@ shnames <- paste("Ring_mean.",c("Nitrate", "Ammonium","Phosphate", sep=""))
 l_ply(1:3, function(x) crSheet(sheetname = shnames[x], dataset = RngSmmryTbl[[x]]))
 
 # worksheets for temp trt summary
-shnames <- paste("Temp_mean.", c("Nitrate", "Ammonium","Phosphate"), sep = "")
+shnames <- paste("CO2_mean.", c("Nitrate", "Ammonium","Phosphate"), sep = "")
 l_ply(1:3, function(x) crSheet(sheetname = shnames[x], dataset = TrtSmmryTbl[[x]]))
 
 #save file
