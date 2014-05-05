@@ -4,7 +4,7 @@
 \usepackage{pdfpages}
 \usepackage{float}
 
-\title{FACE soil-extractable nutrient results -Summary Stats-}
+\title{FACE soil-extractable nutrient results -Detailed Stats-}
 \author{Shun Hasegawa}
 \date{\today}
 
