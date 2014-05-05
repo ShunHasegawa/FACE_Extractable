@@ -1,0 +1,77 @@
+\Sexpr{set_parent('FACE_Extractable_report.Rnw')}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% source files & libraries & setup options                                  %%
+%% need to be loaded here if one wants to compile this child document to PDF %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Nitrate}
+
+%%% CO2 trt %%%
+\subsubsection{CO2 trt}
+
+\begin{figure}[!h]\label{figure:CO2Extractable_Nitrate}
+
+\begin{center}
+
+<<Fig_FACE_CO2_Extr_Nitrate, echo=FALSE, fig.height=3, fig.width=6>>=
+TrtFg[[1]]
+@
+
+\caption{Soil-extractable nitrate at CO2 treatments}
+\end{center}
+\end{figure}
+
+<<Table_FACE_CO2_Extr_Nitrate, echo=FALSE, results='asis'>>=
+printTbl(TrtSmmryTbl[[1]], 
+         caption = "CO2 trt mean of soil-extractable nitrate",
+         label = "table:FACE_CO2_Extractable_nitrate")
+@
+
+%% Stats %%
+<<ReadScript_FACE_Extr_Nitrate, echo=FALSE, cache=FALSE, include=FALSE>>=
+read_chunk('R/Stats_NO.R')
+source("R/Stats_NO.R")
+@
+
+\paragraph{Stats}
+\paragraph{Pre-CO2}
+\noindent
+
+%<<Stat_FACE_Extr_Nitrate_PreCO2, echo=TRUE, results='markup'>>=
+%@
+
+<<Stat_FACE_Extr_Nitrate_PreCO2Smmry, echo=TRUE, results='asis'>>=
+@
+
+\paragraph{Stats}
+\paragraph{Post-CO2}
+\noindent
+
+%<<Stat_FACE_Extr_Nitrate_PostCO2, echo=TRUE, results='markup'>>=
+%@
+
+<<Stat_FACE_Extr_Nitrate_PostCO2Smmry, echo=TRUE, results='asis'>>=
+@
+
+%%% Ring %%%
+\clearpage
+\subsubsection{Ring}
+
+\begin{figure}[!h]\label{figure:RingExtractable_nitrate}
+\begin{center}
+
+<<Fig_FACE_Ring_Extr_Nitrate, echo=FALSE, fig.height=3, fig.width=6>>=
+RngFg[[1]]
+@
+
+\caption{Soil-extractable nitrate in each ring}
+\end{center}
+\end{figure}
+
+<<Table_FACE_Ring_Extr_Nitrate, echo=FALSE, results='asis'>>=
+printRngTbl(RngSmmryTbl[[1]], 
+            caption = "Ring mean of soil-extractable nitrate", 
+            label = "table:FACE_CO2_Extractable_nitrate",
+            size = "small")
+@

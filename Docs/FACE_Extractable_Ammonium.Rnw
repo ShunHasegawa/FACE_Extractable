@@ -1,0 +1,77 @@
+\Sexpr{set_parent('FACE_Extractable_report.Rnw')}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% source files & libraries & setup options                                  %%
+%% need to be loaded here if one wants to compile this child document to PDF %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Ammonium}
+
+%%% CO2 trt %%%
+\subsubsection{CO$_2$ trt}
+
+\begin{figure}[!h]\label{figure:CO2Extractable_Ammonium}
+
+\begin{center}
+
+<<Fig_FACE_CO2_Extr_Ammonium, echo=FALSE, fig.height=3, fig.width=6>>=
+TrtFg[[2]]
+@
+
+\caption{Soil-extractable ammonium at CO2 treatments}
+\end{center}
+\end{figure}
+
+<<Table_FACE_CO2_Extr_Ammonium, echo=FALSE, results='asis'>>=
+printTbl(TrtSmmryTbl[[2]], 
+         caption = "CO2 trt mean of soil-extractable ammonium",
+         label = "table:FACE_CO2_Extractable_ammonium")
+@
+
+%% Stats %%
+<<ReadScript_FACE_Extr_Ammonium, echo=FALSE, cache=FALSE, include=FALSE>>=
+read_chunk('R/Stats_NH.R')
+source("R/Stats_NH.R")
+@
+
+\paragraph{Stats}
+\paragraph{Pre-CO2}
+\noindent
+
+%<<Stat_FACE_Extr_Ammonium_PreCO2, echo=TRUE, results='markup'>>=
+%@
+
+<<Stat_FACE_Extr_Ammonium_PreCO2Smmry, echo=TRUE, results='asis'>>=
+@
+
+\paragraph{Stats}
+\paragraph{Post-CO2}
+\noindent
+
+%<<Stat_FACE_Extr_Ammonium_PostCO2, echo=TRUE, results='markup'>>=
+%@
+
+<<Stat_FACE_Extr_Ammonium_PostCO2Smmry, echo=TRUE, results='asis'>>=
+@
+
+%%% Ring %%%
+\clearpage
+\subsubsection{Ring}
+
+\begin{figure}[!h]\label{figure:RingExtractable_ammonium}
+\begin{center}
+
+<<Fig_FACE_Ring_Extr_Ammonium, echo=FALSE, fig.height=3, fig.width=6>>=
+RngFg[[2]]
+@
+
+\caption{Soil-extractable ammonium in each ring}
+\end{center}
+\end{figure}
+
+<<Table_FACE_Ring_Extr_Ammonium, echo=FALSE, results='asis'>>=
+printRngTbl(RngSmmryTbl[[2]], 
+            caption = "Ring mean of soil-extractable ammonium", 
+            label = "table:FACE_CO2_Extractable_ammonium",
+            size = "small")
+@
