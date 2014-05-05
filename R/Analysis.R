@@ -37,6 +37,11 @@ extr$date <- as.Date(dmy(extr$date))
 # add ID for layter analysis
 extr$id <- extr$ring:extr$plot
 
+# add pre and post co2, not last of pre-co2 is used as a 
+# baseline of post-co2
+extr$pre <- ifelse(extr$time %in% c(1, 2), TRUE, FALSE)
+extr$post <- ifelse(extr$time != 1, TRUE, FALSE)
+
 # save
 save(extr, file = "Output//Data/extractable.RData")
 
