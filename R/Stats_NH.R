@@ -118,3 +118,7 @@ xtable(Anova(Iml_post), floating = FALSE)
 # The final model is:
 Fml_post$call
 xtable(Anova(Fml_post), floating = FALSE)
+
+#  Contrast
+print(xtable(FACE_Extr_PostCO2_NH_CntrstDf, floating = FALSE), 
+      include.rownames = FALSE)

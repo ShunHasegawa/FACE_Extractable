@@ -18,7 +18,7 @@
 TrtFg[[2]]
 @
 
-\caption{Soil-extractable ammonium at CO2 treatments}
+\caption{Soil-extractable ammonium at CO$_2$ treatments}
 \end{center}
 \end{figure}
 
@@ -35,7 +35,7 @@ source("R/Stats_NH.R")
 @
 
 \paragraph{Stats}
-\paragraph{Pre-CO2}
+\paragraph{Pre-CO$_2$}
 \noindent
 
 %<<Stat_FACE_Extr_Ammonium_PreCO2, echo=TRUE, results='markup'>>=
@@ -45,7 +45,7 @@ source("R/Stats_NH.R")
 @
 
 \paragraph{Stats}
-\paragraph{Post-CO2}
+\paragraph{Post-CO$_2$}
 \noindent
 
 %<<Stat_FACE_Extr_Ammonium_PostCO2, echo=TRUE, results='markup'>>=

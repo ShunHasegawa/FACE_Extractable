@@ -44,7 +44,7 @@ qqnorm(Fml_pre, ~ resid(.)|id)
 qqnorm(residuals.lm(Fml_pre))
 qqline(residuals.lm(Fml_pre))
 
-## ---- StatPhosphatePostCO2 ---- 
+## ----Stat_FACE_Extr_Phosphate_PostCO2
 
 ############
 # Post-CO2 #
@@ -100,7 +100,7 @@ qqnorm(Fml_post, ~ resid(.)|id)
 qqnorm(residuals.lm(Fml_post))
 qqline(residuals.lm(Fml_post))
 
-## ---- StatPhosphatePreCO2Smmry ---- 
+## ----Stat_FACE_Extr_Phosphate_PreCO2Smmry
 # The starting model is:
 Iml_pre$call
 xtable(Anova(Iml_pre), floating = FALSE)
@@ -109,7 +109,7 @@ xtable(Anova(Iml_pre), floating = FALSE)
 Fml_pre$call
 xtable(Anova(Fml_pre), floating = FALSE)
 
-## ---- StatPhosphatePostCO2Smmry ---- 
+## ----Stat_FACE_Extr_Phosphate_PostCO2Smmry
 # The starting model is:
 Iml_post$call
 xtable(Anova(Iml_post), floating = FALSE)
@@ -117,3 +117,7 @@ xtable(Anova(Iml_post), floating = FALSE)
 # The final model is:
 Fml_post$call
 xtable(Anova(Fml_post), floating = FALSE)
+
+# contrast
+print(xtable(FACE_Extr_PostCO2_PO_CntrstDf, floatin = FALSE), 
+      include.rownames = FALSE)

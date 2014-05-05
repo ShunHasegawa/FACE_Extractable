@@ -1,8 +1,77 @@
-\documentclass{article}
+\Sexpr{set_parent('FACE_Extractable_report.Rnw')}
 
-\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% source files & libraries & setup options                                  %%
+%% need to be loaded here if one wants to compile this child document to PDF %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\subsection{Phosphate}
 
+%%% CO2 trt %%%
+\subsubsection{CO$_2$ trt}
 
+\begin{figure}[!h]\label{figure:CO2Extractable_Phosphate}
 
-\end{document}
+\begin{center}
+
+<<Fig_FACE_CO2_Extr_Phosphate, echo=FALSE, fig.height=3, fig.width=6>>=
+TrtFg[[2]]
+@
+
+\caption{Soil-extractable phosphate at CO$_2$ treatments}
+\end{center}
+\end{figure}
+
+<<Table_FACE_CO2_Extr_Phosphate, echo=FALSE, results='asis'>>=
+printTbl(TrtSmmryTbl[[2]], 
+         caption = "CO2 trt mean of soil-extractable phosphate",
+         label = "table:FACE_CO2_Extractable_phosphate")
+@
+
+%% Stats %%
+<<ReadScript_FACE_Extr_Phosphate, echo=FALSE, cache=FALSE, include=FALSE>>=
+read_chunk('R/Stats_PO.R')
+source("R/Stats_PO.R")
+@
+
+\paragraph{Stats}
+\paragraph{Pre-CO$_2$}
+\noindent
+
+%<<Stat_FACE_Extr_Phosphate_PreCO2, echo=TRUE, results='markup'>>=
+%@
+
+<<Stat_FACE_Extr_Phosphate_PreCO2Smmry, echo=TRUE, results='asis'>>=
+@
+
+\paragraph{Stats}
+\paragraph{Post-CO$_2$}
+\noindent
+
+%<<Stat_FACE_Extr_Phosphate_PostCO2, echo=TRUE, results='markup'>>=
+%@
+
+<<Stat_FACE_Extr_Phosphate_PostCO2Smmry, echo=TRUE, results='asis'>>=
+@
+
+%%% Ring %%%
+\clearpage
+\subsubsection{Ring}
+
+\begin{figure}[!h]\label{figure:RingExtractable_phosphate}
+\begin{center}
+
+<<Fig_FACE_Ring_Extr_Phosphate, echo=FALSE, fig.height=3, fig.width=6>>=
+RngFg[[2]]
+@
+
+\caption{Soil-extractable phosphate in each ring}
+\end{center}
+\end{figure}
+
+<<Table_FACE_Ring_Extr_Phosphate, echo=FALSE, results='asis'>>=
+printRngTbl(RngSmmryTbl[[2]], 
+            caption = "Ring mean of soil-extractable phosphate", 
+            label = "table:FACE_CO2_Extractable_phosphate",
+            size = "small")
+@
