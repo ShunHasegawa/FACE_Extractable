@@ -28,10 +28,11 @@ extr <- read.csv("Data//extractable.csv",
 extr <- droplevels(extr[complete.cases(extr), ])
 
 # rename columns
-names(extr)[6:8] <- c("no", "nh", "po")
+names(extr)[c(2,6:8)] <- c("date","no", "nh", "po")
+
 
 # format date
-extr$day <- as.Date(dmy(extr$day))
+extr$date <- as.Date(dmy(extr$date))
 
 # add ID for layter analysis
 extr$id <- extr$ring:extr$plot
@@ -39,4 +40,7 @@ extr$id <- extr$ring:extr$plot
 # save
 save(extr, file = "Output//Data/extractable.RData")
 
-
+#######################
+# Excel summary table #
+#######################
+source("R//SummaryExlTable.R")
