@@ -71,6 +71,6 @@ RngFg[[2]]
 <<Table_FACE_Ring_Extr_Phosphate, echo=FALSE, results='asis'>>=
 printRngTbl(RngSmmryTbl[[2]], 
             caption = "Ring mean of soil-extractable phosphate", 
-            label = "table:FACE_CO2_Extractable_phosphate",
+            label = "table:FACE_ring_Extractable_phosphate",
             size = "small")
 @

@@ -71,6 +71,6 @@ RngFg[[2]]
 <<Table_FACE_Ring_Extr_Ammonium, echo=FALSE, results='asis'>>=
 printRngTbl(RngSmmryTbl[[2]], 
             caption = "Ring mean of soil-extractable ammonium", 
-            label = "table:FACE_CO2_Extractable_ammonium",
+            label = "table:FACE_ring_Extractable_ammonium",
             size = "small")
 @
