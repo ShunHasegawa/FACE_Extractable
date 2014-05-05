@@ -60,9 +60,9 @@ bxplts(value= "no", data= subsetD(extr, post))
   # log seems better
 
 # different random factor strucures
-m1 <- lme(log(no + 30) ~ co2 * time, random = ~1|ring/plot, data = subsetD(extr, post))
-m2 <- lme(log(no + 30) ~ co2 * time, random = ~1|ring, data = subsetD(extr, post))
-m3 <- lme(log(no + 30) ~ co2 * time, random = ~1|id, data = subsetD(extr, post))
+m1 <- lme(log(no) ~ co2 * time, random = ~1|ring/plot, data = subsetD(extr, post))
+m2 <- lme(log(no) ~ co2 * time, random = ~1|ring, data = subsetD(extr, post))
+m3 <- lme(log(no) ~ co2 * time, random = ~1|id, data = subsetD(extr, post))
 anova(m1, m2, m3)
   # m1 is better
 
@@ -98,14 +98,7 @@ plot(Fml_post)
 qqnorm(Fml_post, ~ resid(.)|id)
 qqnorm(residuals.lm(Fml_post))
 qqline(residuals.lm(Fml_post))
-  #not grate
-
-# mean vs var
-df <- ddply(subsetD(extr, post), .(time, co2), summarise,  M= mean(no), V = var(no))
-plot(V ~ M, data = df)
-  # try another transformation
-
-
+  #not graat
 
 ## ---- StatNitratePreCO2Smmry ---- 
 # The starting model is:
