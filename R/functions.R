@@ -115,7 +115,17 @@ PltCO2Mean <- function(data){
     scale_color_manual(values = c("blue", "red"), 
                        expression(CO[2]~trt),
                        labels = c("Ambient", expression(eCO[2])))
-  return(p)
+  
+  # add asterisk on NH graphs at co3 treatments
+  if(!any(unique(data$variable) == "nh")) p else{
+    newDF <- subset(data, time %in% c(3, 7) & variable == "nh") # the times and variable where "*" is placed
+    ant_pos <- ddply(newDF, .(date, variable), summarise, Mean = max(Mean + SE)) #y position of "*"
+    ant_pos$lab <- "*"
+    ant_pos$temp <- factor("amb", levels=c("amb", "elve")) 
+    # the original data frame uses "temp", so it needs to have "temp" as well in ggplot2
+    # but it doesn't really do anything    
+    p +  geom_text(data = ant_pos, aes(x =date, y = Mean, label= lab), col = "black", vjust = 0)
+  }
 }
 
 ##############################
