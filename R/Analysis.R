@@ -50,3 +50,8 @@ save(extr, file = "Output//Data/extractable.RData")
 # Excel summary table #
 #######################
 source("R//SummaryExlTable.R")
+
+########
+# Figs #
+########
+source("R/Figs.R")

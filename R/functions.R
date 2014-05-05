@@ -54,10 +54,9 @@ Crt_SmryDF <- function(data, val = "value"){
 ####################
 # plot mean and se #
 ####################
-PltMean <- function(data){
+PltMean <- function(data, ...){
   
-  vars <- c(substitute(nutrients),
-            substitute(NO[3]^"-"-N), 
+  vars <- c(substitute(NO[3]^"-"-N), 
             substitute(NH[4]^"+"-N),
             substitute(PO[4]^"3-"-P))
   # subsitute returens argument as it is without calculation (similar to expression())
@@ -69,43 +68,54 @@ PltMean <- function(data){
     c(expression(), 
       bquote(atop(paste(.(x)), paste((mg~DW_kg^"-1")))))         
   })
-  
   # atop: put the 1st argument on top of the 2nd
   
-  ylab <- ifelse(length(unique(data$variable)) > 1, ylabs[[1]],
-                 ifelse(unique(data$variable) == "no", ylabs[[2]], 
-                        ifelse(unique(data$variable) == "nh", ylabs[[3]],
-                               ylabs[[4]])))
+  # create ylab according to variable
+  ntrs <- c("no", "nh", "po")
   
-  colfactor <- ifelse(any(names(data) == "ring"), "ring", "co2")
+  # when plotting multiple variables at the same time
+  if(length(unique(data$variable)) > 1) 
+    ylab <- expression(Soil-extractable~nutrient~(mg~DW_kg^"-1")) else {
+    # only one variable
+    for (i in 1:3){
+      if(unique(data$variable) == ntrs[i]) ylab  <- ylabs[[i]]
+    }
+  }
   
-  p <- ggplot(data, aes_string(x = "date", y = "Mean", col = colfactor))
+  p <- ggplot(data, aes_string(x = "date", y = "Mean", ...))
   
   p2 <- p + geom_line(size = 1) + 
-    geom_errorbar(aes_string(ymin = "Mean - SE", ymax = "Mean + SE", col = colfactor), width = 5) + 
+    geom_errorbar(aes_string(ymin = "Mean - SE", ymax = "Mean + SE", ...), width = 5) + 
     labs(x = "Time", y = ylab) +
-    geom_vline(xintercept = as.numeric(as.Date("2012-09-18")), linetype = "dashed", col = "black")
+    geom_vline(xintercept = as.numeric(as.Date("2012-09-18")), 
+               linetype = "dashed", 
+               col = "black")
+}
+
+##################
+# Plot ring mean #
+##################
+PltRnghMean <- function(data){
+  # change factor level names for labelling
+  p <- PltMean(data, col = "ring", linetype = "co2") +
+    scale_color_manual(values = palette(), "Ring", 
+                       labels = paste("Ring", c(1:6), sep = "_")) +
+    scale_linetype_manual(values = c("dashed", "solid"),
+                          expression(CO[2]~trt),
+                          labels = c("Ambient", expression(eCO[2])))
   
-  # change colors, linetype and associated legend according to plotting groups (ring or treatment)
-  if(colfactor == "co2") 
-    p3  <- p2 +  
-    scale_color_manual(values = c("blue", "red"), expression(CO[2]~trt), labels = c("Ambient", expression(eCO[2]))) else
-      p3 <- p2 + 
-    scale_color_manual(values = palette(), "Ring", labels = paste("Ring", c(1:6), sep = "_")) +
-    scale_linetype_manual(values = c("solid", "dashed", "dashed", "solid", "solid", "dashed"), 
-                          "Ring", labels = paste("Ring", c(1:6), sep = "_"))
-  
-  # add asterisk on P graphs at co2 treatments
-  if(colfactor == "ring" | !any(unique(data$variable) == "poxxx")) p3 else{
-    newDF <- subset(data, time %in% c(2, 6)) # the times where "*" is placed
-    ant_pos <- ddply(newDF, .(date, variable), summarise, Mean = max(Mean + SE)) #y position of "*"
-    ant_pos <- subset(ant_pos, variable == "po") # only applied to PO data
-    ant_pos$lab <- "*"
-    ant_pos$co2 <- factor("amb", levels=c("amb", "elev")) 
-    # the original data frame uses "co2", so it needs to have "co2" as well in ggplot2
-    # but it doesn't really do anything    
-    p3 +  geom_text(data = ant_pos, aes(x =date, y = Mean, label= lab), col = "black", vjust = 0)
-  }
+    return(p)
+}
+
+######################
+# Plot temp trt mean #
+######################
+PltCO2Mean <- function(data){
+  p <- PltMean(data, col = "co2") +
+    scale_color_manual(values = c("blue", "red"), 
+                       expression(CO[2]~trt),
+                       labels = c("Ambient", expression(eCO[2])))
+  return(p)
 }
 
 ##############################
