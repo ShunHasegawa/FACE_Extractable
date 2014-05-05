@@ -97,7 +97,7 @@ plot(Fml_post)
 qqnorm(Fml_post, ~ resid(.)|id)
 qqnorm(residuals.lm(Fml_post))
 qqline(residuals.lm(Fml_post))
-  #not graat
+  #not great
 
 ## ---- StatNitratePreCO2Smmry ---- 
 # The starting model is:
