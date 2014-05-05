@@ -40,7 +40,7 @@ Fml_pre <- MdlSmpl(spml)$model.reml
 # The final model is:
 Fml_pre$call
 
-anova(Fml_pre)
+Anova(Fml_pre)
 
 summary(Fml_pre)
 
