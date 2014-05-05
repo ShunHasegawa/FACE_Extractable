@@ -44,7 +44,6 @@ source("R/Stats_NH.R")
 <<Stat_FACE_Extr_Ammonium_PreCO2Smmry, echo=TRUE, results='asis'>>=
 @
 
-\paragraph{Stats}
 \paragraph{Post-CO$_2$}
 \noindent
 
