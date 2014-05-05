@@ -13,6 +13,7 @@ library(xlsx)
 library(contrast)
 library(effects)
 library(ggplot2)
+library(xtable)
 
 source("R//functions.R")
 
