@@ -50,7 +50,7 @@ qqnorm(Fml_pre, ~ resid(.)|id)
 qqnorm(residuals.lm(Fml_pre))
 qqline(residuals.lm(Fml_pre))
 
-## ---- StatNitratePostCO2 ---- 
+## ----Stat_FACE_Extr_Nitrate_PostCO2
 
 ############
 # Post-CO2 #
@@ -99,7 +99,8 @@ qqnorm(residuals.lm(Fml_post))
 qqline(residuals.lm(Fml_post))
   #not great
 
-## ---- StatNitratePreCO2Smmry ---- 
+
+## ----Stat_FACE_Extr_Nitrate_PreCO2Smmry
 # The starting model is:
 Iml_pre$call
 xtable(Anova(Iml_pre), floating = FALSE)
@@ -108,7 +109,7 @@ xtable(Anova(Iml_pre), floating = FALSE)
 Fml_pre$call
 xtable(Anova(Fml_pre), floating = FALSE)
 
-## ---- StatNitratePostCO2Smmry ---- 
+## ----Stat_FACE_Extr_Nitrate_PostCO2Smmry
 # The starting model is:
 Iml_post$call
 xtable(Anova(Iml_post), floating = FALSE)
