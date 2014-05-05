@@ -86,7 +86,7 @@ Fml_post <- MdlSmpl(Iml_post)$model.reml
 # The final model is:
 Fml_post$call
 
-anova(Fml_post)
+Anova(Fml_post)
 
 summary(Fml_post)
 
@@ -94,7 +94,6 @@ summary(Fml_post)
 
 # model diagnosis
 plot(Fml_post)
- # wedge-shaped
 qqnorm(Fml_post, ~ resid(.)|id)
 qqnorm(residuals.lm(Fml_post))
 qqline(residuals.lm(Fml_post))
@@ -103,17 +102,17 @@ qqline(residuals.lm(Fml_post))
 ## ---- StatNitratePreCO2Smmry ---- 
 # The starting model is:
 Iml_pre$call
-xtable(anova(Iml_pre), floating = FALSE)
+xtable(Anova(Iml_pre), floating = FALSE)
 
 # The final model is:
 Fml_pre$call
-xtable(anova(Fml_pre), floating = FALSE)
+xtable(Anova(Fml_pre), floating = FALSE)
 
 ## ---- StatNitratePostCO2Smmry ---- 
 # The starting model is:
 Iml_post$call
-xtable(anova(Iml_post), floating = FALSE)
+xtable(Anova(Iml_post), floating = FALSE)
 
 # The final model is:
 Fml_post$call
-xtable(anova(Fml_post), floating = FALSE)
+xtable(Anova(Fml_post), floating = FALSE)
