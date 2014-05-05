@@ -44,7 +44,7 @@ qqnorm(Fml_pre, ~ resid(.)|id)
 qqnorm(residuals.lm(Fml_pre))
 qqline(residuals.lm(Fml_pre))
 
-## ---- StatAmmoniumPostCO2 ---- 
+## ----Stat_FACE_Extr_Ammonium_PostCO2
 
 ############
 # Post-CO2 #
@@ -101,7 +101,7 @@ qqnorm(Fml_post, ~ resid(.)|id)
 qqnorm(residuals.lm(Fml_post))
 qqline(residuals.lm(Fml_post))
 
-## ---- StatAmmoniumPreCO2Smmry ---- 
+## ----Stat_FACE_Extr_Ammonium_PreCO2Smmry
 # The starting model is:
 Iml_pre$call
 xtable(Anova(Iml_pre), floating = FALSE)
@@ -110,7 +110,7 @@ xtable(Anova(Iml_pre), floating = FALSE)
 Fml_pre$call
 xtable(Anova(Fml_pre), floating = FALSE)
 
-## ---- StatAmmoniumPostCO2Smmry ---- 
+## ----Stat_FACE_Extr_Ammonium_PostCO2Smmry
 # The starting model is:
 Iml_post$call
 xtable(Anova(Iml_post), floating = FALSE)
