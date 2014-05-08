@@ -15,7 +15,7 @@
 \begin{center}
 
 <<Fig_FACE_CO2_Extr_Phosphate, echo=FALSE, fig.height=3, fig.width=6>>=
-TrtFg[[2]]
+TrtFg[[3]]
 @
 
 \caption{Soil-extractable phosphate at CO$_2$ treatments}
@@ -23,7 +23,7 @@ TrtFg[[2]]
 \end{figure}
 
 <<Table_FACE_CO2_Extr_Phosphate, echo=FALSE, results='asis'>>=
-printTbl(TrtSmmryTbl[[2]], 
+printTbl(TrtSmmryTbl[[3]], 
          caption = "CO2 trt mean of soil-extractable phosphate",
          label = "table:FACE_CO2_Extractable_phosphate")
 @
@@ -61,7 +61,7 @@ source("R/Stats_PO.R")
 \begin{center}
 
 <<Fig_FACE_Ring_Extr_Phosphate, echo=FALSE, fig.height=3, fig.width=6>>=
-RngFg[[2]]
+RngFg[[3]]
 @
 
 \caption{Soil-extractable phosphate in each ring}
@@ -69,7 +69,7 @@ RngFg[[2]]
 \end{figure}
 
 <<Table_FACE_Ring_Extr_Phosphate, echo=FALSE, results='asis'>>=
-printRngTbl(RngSmmryTbl[[2]], 
+printRngTbl(RngSmmryTbl[[3]], 
             caption = "Ring mean of soil-extractable phosphate", 
             label = "table:FACE_CO2_Extractable_phosphate",
             size = "small")
