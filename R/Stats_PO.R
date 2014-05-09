@@ -54,9 +54,9 @@ bxplts(value= "po", data= subsetD(extr, post))
   # log seems better
 
 # different random factor strucures
-m1 <- lme(log(po) ~ co2 * time, random = ~1|ring/plot, data = subsetD(extr, post))
-m2 <- lme(log(po) ~ co2 * time, random = ~1|ring, data = subsetD(extr, post))
-m3 <- lme(log(po) ~ co2 * time, random = ~1|id, data = subsetD(extr, post))
+m1 <- lme(po^(-0.1818) ~ co2 * time, random = ~1|ring/plot, data = subsetD(extr, post))
+m2 <- lme(po^(-0.1818) ~ co2 * time, random = ~1|ring, data = subsetD(extr, post))
+m3 <- lme(po^(-0.1818) ~ co2 * time, random = ~1|id, data = subsetD(extr, post))
 anova(m1, m2, m3)
   # m1 is better
 
@@ -95,7 +95,6 @@ FACE_Extr_PostCO2_PO_CntrstDf
 
 # model diagnosis
 plot(Fml_post)
-# wedge-shaped
 qqnorm(Fml_post, ~ resid(.)|id)
 qqnorm(residuals.lm(Fml_post))
 qqline(residuals.lm(Fml_post))
