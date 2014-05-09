@@ -41,7 +41,7 @@ source("R/Stats_PO.R")
 %<<Stat_FACE_Extr_Phosphate_PreCO2, echo=TRUE, results='markup'>>=
 %@
 
-<<Stat_FACE_Extr_Phosphate_PreCO2Smmry, echo=TRUE, results='asis'>>=
+<<Stat_FACE_Extr_Phosphate_PreCO2Smmry, echo=TRUE, results='markup'>>=
 @
 
 \paragraph{Post-CO$_2$}
@@ -50,7 +50,7 @@ source("R/Stats_PO.R")
 %<<Stat_FACE_Extr_Phosphate_PostCO2, echo=TRUE, results='markup'>>=
 %@
 
-<<Stat_FACE_Extr_Phosphate_PostCO2Smmry, echo=TRUE, results='asis'>>=
+<<Stat_FACE_Extr_Phosphate_PostCO2Smmry, echo=TRUE, results='markup'>>=
 @
 
 %%% Ring %%%

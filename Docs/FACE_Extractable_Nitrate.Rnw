@@ -41,7 +41,7 @@ source("R/Stats_NO.R")
 %<<Stat_FACE_Extr_Nitrate_PreCO2, echo=TRUE, results='markup'>>=
 %@
 
-<<Stat_FACE_Extr_Nitrate_PreCO2Smmry, echo=TRUE, results='asis'>>=
+<<Stat_FACE_Extr_Nitrate_PreCO2Smmry, echo=TRUE, results='markup'>>=
 @
 
 \paragraph{Post-CO$_2$}
@@ -50,7 +50,7 @@ source("R/Stats_NO.R")
 %<<Stat_FACE_Extr_Nitrate_PostCO2, echo=TRUE, results='markup'>>=
 %@
 
-<<Stat_FACE_Extr_Nitrate_PostCO2Smmry, echo=TRUE, results='asis'>>=
+<<Stat_FACE_Extr_Nitrate_PostCO2Smmry, echo=TRUE, results='markup'>>=
 @
 
 %%% Ring %%%
