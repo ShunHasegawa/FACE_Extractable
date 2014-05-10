@@ -53,18 +53,23 @@ qqline(residuals.lm(Fml_pre))
 bxplts(value= "po", data= subsetD(extr, post))
   # log seems better
 
+extr$timePly <- ordered(extr$time)
+extr$timeC <- poly(as.numeric(extr$time), degree =3)
+
+
 # different random factor strucures
-m1 <- lme(po^(-0.1818) ~ co2 * time, random = ~1|ring/plot, data = subsetD(extr, post))
-m2 <- lme(po^(-0.1818) ~ co2 * time, random = ~1|ring, data = subsetD(extr, post))
-m3 <- lme(po^(-0.1818) ~ co2 * time, random = ~1|id, data = subsetD(extr, post))
+m1 <- lme(po^(-0.1818) ~ co2 * timeC, random = ~1|ring/plot, data = subsetD(extr, post))
+m2 <- lme(po^(-0.1818) ~ co2 * timeC, random = ~1|ring, data = subsetD(extr, post))
+m3 <- lme(po^(-0.1818) ~ co2 * timeC, random = ~1|id, data = subsetD(extr, post))
 anova(m1, m2, m3)
   # m1 is better
 
 # autocorelation
-atcr.cmpr(m1, rndmFac="ring/plot")$models
-  # no need of autocorrelation
+atml <- atcr.cmpr(m1, rndmFac="ring/plot")
+atml$models
+  # model4
 
-Iml_post <- m1
+Iml_post <- atml[[4]]
 
 # The starting model is:
 Iml_post$call
