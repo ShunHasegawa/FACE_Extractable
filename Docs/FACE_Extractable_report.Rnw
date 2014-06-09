@@ -51,6 +51,20 @@ source("R//Figs.R")
 
 \section{Soil-extractable nutrients}
 
+%%%%%%%%%%%%%%%
+% summary fig %
+%%%%%%%%%%%%%%%
+\subsection{Summary results}
+\begin{center}
+\begin{figure}[!ht]\label{figure:FACE_Extractable_Allres}
+
+\includegraphics[width=\textwidth]{../Output/Figs/FACE_IEM_CO2Trt.pdf}
+
+\caption{Soil-extractable nutrients}
+
+\end{figure}
+\end{center}
+
 %%%%%%%%%%%
 % Nitrate %
 %%%%%%%%%%%
