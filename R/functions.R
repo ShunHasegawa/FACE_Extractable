@@ -273,3 +273,16 @@ printRngTbl <- function(tbl, caption, label, ...){
 subsetD <- function(data,...){
   droplevels(subset(data, ...))
 }
+
+##################
+# percent change #
+##################
+PerChange <- function(data){
+  d  <- data[order(data$date), ]
+  df <- within(d, {
+    pcNO = Delt(d$no, type = "arithmetic")
+    pcNH = Delt(d$nh, type = "arithmetic")
+    pcP = Delt(d$po, type = "arithmetic")
+  })
+  return(df)
+}
