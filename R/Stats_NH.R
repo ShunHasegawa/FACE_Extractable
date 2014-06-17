@@ -101,6 +101,33 @@ qqnorm(Fml_post, ~ resid(.)|id)
 qqnorm(residuals.lm(Fml_post))
 qqline(residuals.lm(Fml_post))
 
+## ---- Stat_FACE_Extr_Ammonium_postCO2_withSoilVar
+##########
+# Ancova #
+##########
+# plot against soil varriable
+scatterplotMatrix(~ nh + log(Moist) + Temp_Max + Temp_Mean + Temp_Min,
+                  diag = "boxplot", 
+                  subsetD(extr, !pre))
+
+scatterplotMatrix(~ sqrt(nh) + log(Moist) + Temp_Max + Temp_Mean + Temp_Min,
+                  diag = "boxplot", 
+                  subsetD(extr, !pre))
+
+# plot for each plot against soil variables
+print(xyplot(sqrt(nh) ~ log(Moist) | ring + plot, subsetD(extr, !pre), type = c("r", "p")))
+print(xyplot(sqrt(nh) ~ Temp_Max | ring + plot, subsetD(extr, !pre), type = c("r", "p")))
+
+# analysis
+Iml_ancv <- lme(sqrt(nh) ~ co2 * log(Moist), 
+                random = ~1|block/ring/plot,  
+                data = subsetD(extr, !pre))
+Anova(Iml_ancv)
+Fml_ancv <- MdlSmpl(Iml_ancv)$model.reml
+Anova(Fml_ancv)
+summary(Fml_ancv)
+# no need to use covariates
+
 ## ----Stat_FACE_Extr_Ammonium_PreCO2Smmry
 # The starting model is:
 Iml_pre$call
