@@ -92,5 +92,4 @@ source("R/Figs.R")
 #########
 # Stats #
 #########
-# parcent change
-pchDF <- ddply(extr, .(ring, plot, co2, block, id), PerChange)
+source("R/Stats.R")
