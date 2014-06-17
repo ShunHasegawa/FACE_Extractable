@@ -141,3 +141,7 @@ Anova(Iml_post)
 # The final model is:
 Fml_post$call
 Anova(Fml_post)
+
+## ---- Stat_FACE_Extr_Nitrate_postCO2_withSoilVarSmmry
+Iml_ancv$call
+Anova(Iml_ancv)
