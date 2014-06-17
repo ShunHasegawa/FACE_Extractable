@@ -22,8 +22,8 @@ source("R//functions.R")
 ######################
 # Process data frame #
 ######################
-source("R/ProcessDF.R")
-
+# source("R/ProcessDF.R")
+load("Output//Data//extractable.RData")
 
 #######################
 # Excel summary table #
