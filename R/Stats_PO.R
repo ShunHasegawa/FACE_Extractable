@@ -99,6 +99,7 @@ qqnorm(Fml_post, ~ resid(.)|id)
 qqnorm(residuals.lm(Fml_post))
 qqline(residuals.lm(Fml_post))
 
+## ---- Stat_FACE_Extr_Phosphate_postCO2_withSoilVar
 
 ##########
 # Ancova #
@@ -141,7 +142,7 @@ PredDF <- PredVal(data = extr, model = Fml_ancv)
 
 theme_set(theme_bw())
 p <- ggplot(PredDF, aes(x = Moist, y = exp(predict.block), col = co2))
-p + geom_line() +
+pl <- p + geom_line() +
   geom_point(aes(x = Moist, y = po, col = co2), data = subsetD(extr, !pre)) + 
   scale_color_manual("co2", values = c("blue", "red")) +
   facet_grid(.~block)
@@ -172,4 +173,16 @@ Anova(Fml_post)
 
 # contrast
 FACE_Extr_PostCO2_PO_CntrstDf
+
+## ---- Stat_FACE_Extr_Phosphate_postCO2_withSoilVarSmmry
+# The initial model is
+Iml_ancv$call
+Anova(Iml_ancv)
+
+# The final model is
+Fml_ancv$call
+Anova(Fml_ancv)
+
+## plot predicted value for each block
+pl
 

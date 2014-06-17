@@ -99,6 +99,30 @@ qqnorm(residuals.lm(Fml_post))
 qqline(residuals.lm(Fml_post))
   #not great
 
+## ---- Stat_FACE_Extr_Nitrate_postCO2_withSoilVar
+##########
+# Ancova #
+##########
+
+# plot against soil varriable
+scatterplotMatrix(~ no + log(Moist) + Temp_Max + Temp_Mean + Temp_Min,
+                  diag = "boxplot", 
+                  subsetD(extr, !pre))
+
+scatterplotMatrix(~ log(no) + log(Moist) + Temp_Max + Temp_Mean + Temp_Min,
+                  diag = "boxplot", 
+                  subsetD(extr, !pre))
+# plot for each plot against soil variables
+print(xyplot(log(no) ~ log(Moist) | ring + plot, subsetD(extr, !pre), type = c("r", "p")))
+
+# analysis
+# Note Temp_Max and log(Moist) appears to be correlated so shouln't be 
+# placed in a multiple regression model
+Iml_ancv <- lme(log(no) ~ co2 * log(Moist), 
+                random = ~1|block/ring/plot,  
+                data = subsetD(extr, !pre))
+Anova(Iml_ancv)
+# no need to use covariates
 
 ## ----Stat_FACE_Extr_Nitrate_PreCO2Smmry
 # The starting model is:
