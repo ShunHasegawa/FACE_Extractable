@@ -132,27 +132,7 @@ summary(Fml_ancv)
 plot(allEffects(Fml_ancv))
 
 ## plot predicted value
-
-PltPr_Moist <- function(){
-  visreg(Fml_ancv, 
-         xvar = "Moist",
-         by = "co2", 
-         trans = exp,
-         level = 1, # take random factor into accound
-         overlay = TRUE, 
-         print.cond=TRUE, 
-         line.par = list(col = c("blue", "red")),
-         points.par = list(col = c("blue", "red")))
-  timePos <- seq(1, 3, length.out = 6)
-  times <- c(3:8)
-  for (i in 1:6){
-    lines(x = range(extr$Moist[extr$time == times[i]]), y = rep(timePos[i], 2), lwd = 2)
-    text(x = mean(range(extr$Moist[extr$time == times[i]])), y = timePos[i], 
-         labels = paste("Time =", times[i]), pos = 3)
-  }
-  legend("topright", lty =1, leg = "Moist range", bty = "n")
-}
-PltPr_Moist()
+PltPr_Moist(Fml_ancv, trans = exp)
 
 
 ## plot predicted value for each block
