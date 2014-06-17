@@ -103,8 +103,104 @@ qqline(residuals.lm(Fml_post))
 ##########
 # Ancova #
 ##########
+# plot against soil varriable
+scatterplotMatrix(~ po + log(Moist) + Temp_Max + Temp_Mean + Temp_Min,
+                  diag = "boxplot", 
+                  subsetD(extr, !pre))
+
+scatterplotMatrix(~ log(po) + log(Moist) + Temp_Max + Temp_Mean + Temp_Min,
+                  diag = "boxplot", 
+                  subsetD(extr, !pre))
+
+# moisture seems to have a positive effect
+
+# plot for each plot against soil variables
+print(xyplot(log(po) ~ log(Moist) | ring + plot, subsetD(extr, !pre), type = c("r", "p")))
+
+# analysis
+# Note Temp_Max and log(Moist) appears to be correlated so shouln't be 
+# placed in a multiple regression model
+Iml_ancv <- lme(log(po) ~ co2 * log(Moist), 
+                random = ~1|block/ring/plot,  
+                data = subsetD(extr, !pre))
+Anova(Iml_ancv)
+Fml_ancv <- MdlSmpl(Iml_ancv)$model.reml
+Anova(Fml_ancv)
+summary(Fml_ancv)
+
+# main effects
+plot(allEffects(Fml_ancv))
+
+## plot predicted value
+
+PltPr_Moist <- function(){
+  visreg(Fml_ancv, 
+         xvar = "Moist",
+         by = "co2", 
+         trans = exp,
+         level = 1, # take random factor into accound
+         overlay = TRUE, 
+         print.cond=TRUE, 
+         line.par = list(col = c("blue", "red")),
+         points.par = list(col = c("blue", "red")))
+  timePos <- seq(1, 3, length.out = 6)
+  times <- c(3:8)
+  for (i in 1:6){
+    lines(x = range(extr$Moist[extr$time == times[i]]), y = rep(timePos[i], 2), lwd = 2)
+    text(x = mean(range(extr$Moist[extr$time == times[i]])), y = timePos[i], 
+         labels = paste("Time =", times[i]), pos = 3)
+  }
+  legend("topright", lty =1, leg = "Moist range", bty = "n")
+}
+PltPr_Moist()
 
 
+# predicted value for each block
+# data frame for predicted values from the final model
+
+# data fram for explanatory variables
+expDF <- with(extr, expand.grid(ring = unique(ring), 
+                               plot = unique(plot),
+                               Moist = seq(min(Moist), max(Moist), length.out= 100)))
+
+expDF <- within(expDF, {
+  block = recode(ring, "c(1,2) = 'A'; c(3,4) = 'B'; c(5,6) = 'C'")
+  co2 = factor(ifelse(ring %in% c(1, 4, 5), "elev", "amb"))
+  id = ring:plot
+})
+
+# adjust the moisture range according to the actural range 
+# for each block
+BlkMoist <- function(variable, data){
+  a <- range(subset(extr, !pre & block == variable)$Moist)
+  df <- subset(data, 
+               block == variable & 
+               Moist <= a[2] & 
+               Moist >= a[1])
+  return(df)
+}
+
+expDF <- ldply(list("A", "B", "C"), function(x) BlkMoist(variable = x, data = expDF))
+
+mlmer <- lmer(log(po) ~ co2 + log(Moist)
+              + (1|block) + (1|ring)+ (1|id),
+              data = subsetD(extr, !pre))
+summary(mlmer)
+
+# predict values from the model
+PredDF <- cbind(expDF, predict = predict(mlmer, newdata = expDF))
+
+p <- ggplot(PredDF, aes(x = Moist, y = predict, col = co2, group = id))
+p + geom_line() +
+  facet_grid(.~block) +
+  scale_color_manual(expression(CO[2]~trt), values = c("blue", "red"))
+
+
+# model diagnosis
+plot(Fml_ancv)
+qqnorm(Fml_ancv, ~ resid(.)|id)
+qqnorm(residuals.lm(Fml_ancv))
+qqline(residuals.lm(Fml_ancv))
 
 ## ----Stat_FACE_Extr_Phosphate_PreCO2Smmry
 # The starting model is:
