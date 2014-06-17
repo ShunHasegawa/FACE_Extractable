@@ -18,7 +18,7 @@ extr <- within(extr, {
   # add ID for layter analysis
   id <- ring:plot
   
-  # add pre and post co2, not last of pre-co2 is used as a 
+  # add pre and post co2, not last of pre-co2 is used as a
   # baseline of post-co2
   pre <- ifelse(time %in% c(1, 2), TRUE, FALSE)
   post <- ifelse(time != 1, TRUE, FALSE)
