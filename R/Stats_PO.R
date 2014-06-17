@@ -132,41 +132,13 @@ summary(Fml_ancv)
 plot(allEffects(Fml_ancv))
 
 ## plot predicted value
-PltPr_Moist(Fml_ancv, trans = exp)
-
+Visreg_Moist(Fml_ancv, trans = exp, orginalData = extr)
 
 ## plot predicted value for each block
-# data frame for predicted values from the final model
 
-# data fram for explanatory variables
-expDF <- with(extr, expand.grid(ring = unique(ring), 
-                               plot = unique(plot),
-                               Moist = seq(min(Moist), max(Moist), length.out= 100)))
+# data frame with predicted values
+PredDF <- PredVal(data = extr, model = Fml_ancv)
 
-expDF <- within(expDF, {
-  block = recode(ring, "c(1,2) = 'A'; c(3,4) = 'B'; c(5,6) = 'C'")
-  co2 = factor(ifelse(ring %in% c(1, 4, 5), "elev", "amb"))
-  id = ring:plot
-})
-
-# adjust the moisture range according to the actural range 
-# for each block
-BlkMoist <- function(variable, data){
-  a <- range(subset(extr, !pre & block == variable)$Moist)
-  df <- subset(data, 
-               block == variable & 
-               Moist <= a[2] & 
-               Moist >= a[1])
-  return(df)
-}
-
-expDF <- ldply(list("A", "B", "C"), 
-               function(x) BlkMoist(variable = x, data = expDF))
-
-# predicted values from the model above
-PredDF <- cbind(expDF, predict(Fml_ancv, 
-                               level = 0:3, 
-                               newdata = expDF))
 theme_set(theme_bw())
 p <- ggplot(PredDF, aes(x = Moist, y = exp(predict.block), col = co2))
 p + geom_line() +

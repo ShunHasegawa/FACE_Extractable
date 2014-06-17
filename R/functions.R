@@ -296,10 +296,12 @@ SoilPeriodMean <- function(data, rings, plots, Start, End){
     colMeans(x[c("Moist", "Temp_Mean", "Temp_Min", "Temp_Max")], na.rm = TRUE))
 }
 
+
 #########################
 # plot predicted values #
 #########################
-PltPr_Moist <- function(model, ...){
+# with vesreg function
+Visreg_Moist <- function(model, ..., orginalData){
   visreg(model, 
          xvar = "Moist",
          by = "co2", 
@@ -309,12 +311,57 @@ PltPr_Moist <- function(model, ...){
          line.par = list(col = c("blue", "red")),
          points.par = list(col = c("blue", "red")), 
          ...)
-  timePos <- seq(1, 3, length.out = 6)
-  times <- c(3:8)
-  for (i in 1:6){
-    lines(x = range(extr$Moist[extr$time == times[i]]), y = rep(timePos[i], 2), lwd = 2)
-    text(x = mean(range(extr$Moist[extr$time == times[i]])), y = timePos[i], 
+  
+  times <- unique(orginalData$time[!orginalData$pre])
+  timePos <- seq(1, 3, length.out = length(times))
+  
+  for (i in 1:length(times)){
+    lines(x = range(orginalData$Moist[orginalData$time == times[i]]), y = rep(timePos[i], 2), lwd = 2)
+    text(x = mean(range(orginalData$Moist[orginalData$time == times[i]])), y = timePos[i], 
          labels = paste("Time =", times[i]), pos = 3)
   }
   legend("topright", lty =1, leg = "Moist range", bty = "n")
 }
+
+####################################
+# data frame with predicted values #
+####################################
+
+# function to adjust the moisture range according to the 
+# actural range for each block
+BlkMoist <- function(variable, data){
+  a <- range(subset(extr, !pre & block == variable)$Moist)
+  df <- subset(data, 
+               block == variable & 
+                 Moist <= a[2] & 
+                 Moist >= a[1])
+  return(df)
+}
+
+PredVal <- function(data, model){
+  # data frame for predicted values from the final model
+  
+  # data fram for explanatory variables
+  expDF <- with(data, expand.grid(
+    ring = unique(ring), 
+    plot = unique(plot),
+    Moist = seq(min(Moist), 
+    max(Moist), 
+    length.out= 100)))
+  
+  expDF <- within(expDF, {
+    block = recode(ring, "c(1,2) = 'A'; c(3,4) = 'B'; c(5,6) = 'C'")
+    co2 = factor(ifelse(ring %in% c(1, 4, 5), "elev", "amb"))
+    id = ring:plot
+  })
+  
+  expDF <- ldply(list("A", "B", "C"), 
+                 function(x) BlkMoist(variable = x, data = expDF))
+  
+  # predicted values from the model above
+  PredDF <- cbind(expDF, predict(model, 
+                                 level = 0:3, 
+                                 newdata = expDF))
+  return(PredDF)
+}
+
