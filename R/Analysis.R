@@ -15,6 +15,7 @@ library(effects)
 library(ggplot2)
 library(scales)
 library(xtable)
+library(visreg)
 
 source("R//functions.R")
 
