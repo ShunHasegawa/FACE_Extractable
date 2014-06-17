@@ -99,6 +99,13 @@ qqnorm(Fml_post, ~ resid(.)|id)
 qqnorm(residuals.lm(Fml_post))
 qqline(residuals.lm(Fml_post))
 
+
+##########
+# Ancova #
+##########
+
+
+
 ## ----Stat_FACE_Extr_Phosphate_PreCO2Smmry
 # The starting model is:
 Iml_pre$call
