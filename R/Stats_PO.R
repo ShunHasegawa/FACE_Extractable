@@ -194,33 +194,6 @@ p + geom_line() +
   scale_color_manual("co2", values = c("blue", "red")) +
   facet_grid(.~block)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-mlmer <- lmer(log(po) ~ co2 + log(Moist)
-              + (1|block) + (1|ring)+ (1|id),
-              data = subsetD(extr, !pre))
-summary(mlmer)
-
-# predict values from the model
-PredDF <- cbind(expDF, predict = predict(mlmer, newdata = expDF))
-
-p <- ggplot(PredDF, aes(x = Moist, y = predict, col = co2, group = id))
-p + geom_line() +
-  facet_grid(.~block) +
-  scale_color_manual(expression(CO[2]~trt), values = c("blue", "red"))
-
-
 # model diagnosis
 plot(Fml_ancv)
 qqnorm(Fml_ancv, ~ resid(.)|id)
