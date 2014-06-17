@@ -55,29 +55,35 @@ extr <- within(extr, {
 # save
 save(extr, file = "Output//Data/extractable.RData")
 
+##################
+# soil variables #
+##################
+load("Data/FACE_TDR_ProbeDF.RData")
 
-# ##################
-# # soil variables #
-# ##################
-# load("Data/FACE_TDR_ProbeDF.RData")
-# 
-# # subset soil
-# TdrSoil <- subsetD(FACE_TDR_ProbeDF, Sample == "soil")
-# 
-# # compute mean of soil variable for given period
-# SoilPeriodMean <- function(data, rings, plots, Start, End){
-#   sDF <- subset(data, Date >= Start & Date >= End & ring == rings & plot == plots)
-#   ddply(sDF, .(ring, plot),function(x) colMeans(x[c("Moist", "Temp_Mean", "Temp_Min", "Temp_Max")], na.rm = TRUE))
-# }
-# 
-# IEMSoil <- ddply(iem, .(insertion, sampling, ring, plot), 
-#                  function(x) SoilPeriodMean(data = TdrIem, Start = x$insertion, End = x$sampling, rings = x$ring, plot = x$plot))
-# 
-# # merge
-# iem <- merge(iem, IEMSoil, by = c("insertion", "sampling", "ring", "plot"))
-# 
-# # save
-# save(iem, file = "output//data//FACE_IEM.RData")
+# subset soil
+TdrSoil <- subsetD(FACE_TDR_ProbeDF, Sample == "soil")
+
+# compute mean of soil variable for given period
+SoilPeriodMean <- function(data, rings, plots, Start, End){
+  sDF <- subset(data, Date >= Start & Date >= End & ring == rings & plot == plots)
+  ddply(sDF, .(ring, plot),function(x) colMeans(x[c("Moist", "Temp_Mean", "Temp_Min", "Temp_Max")], na.rm = TRUE))
+}
+
+# compute 3-month mean of soil variables for each plot
+extrSoil <- ddply(extr, .(date, ring, plot), 
+                  function(x) SoilPeriodMean(
+                    data = TdrSoil, 
+                    Start = x$date - 3 * 4 * 7, # (3 months before)
+                    End = x$date, 
+                    rings = x$ring, 
+                    plot = x$plot))
+
+# merge
+extr <- merge(extr, extrSoil, by = c("date", "ring", "plot"))
+
+# save
+save(extr, file = "Output//Data/extractable.RData")
+
 
 #######################
 # Excel summary table #
@@ -95,6 +101,7 @@ source("R/Figs.R")
 # parcent change
 pchDF <- ddply(extr, .(ring, plot, co2, block, id), PerChange)
 
+# soil variable
 
 scatter.plot(~ no + pcNO + 
               nh + pcNH +
