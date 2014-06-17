@@ -148,3 +148,7 @@ Anova(Fml_post)
 
 #  Contrast
 FACE_Extr_PostCO2_NH_CntrstDf
+
+## ---- Stat_FACE_Extr_Ammonium_postCO2_withSoilVarSmmry
+Iml_ancv$call
+Anova(Iml_ancv)
