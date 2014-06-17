@@ -47,6 +47,30 @@ extr$post <- ifelse(extr$time != 1, TRUE, FALSE)
 # save
 save(extr, file = "Output//Data/extractable.RData")
 
+
+# ##################
+# # soil variables #
+# ##################
+# load("Data/FACE_TDR_ProbeDF.RData")
+# 
+# # subset soil
+# TdrSoil <- subsetD(FACE_TDR_ProbeDF, Sample == "soil")
+# 
+# # compute mean of soil variable for given period
+# SoilPeriodMean <- function(data, rings, plots, Start, End){
+#   sDF <- subset(data, Date >= Start & Date >= End & ring == rings & plot == plots)
+#   ddply(sDF, .(ring, plot),function(x) colMeans(x[c("Moist", "Temp_Mean", "Temp_Min", "Temp_Max")], na.rm = TRUE))
+# }
+# 
+# IEMSoil <- ddply(iem, .(insertion, sampling, ring, plot), 
+#                  function(x) SoilPeriodMean(data = TdrIem, Start = x$insertion, End = x$sampling, rings = x$ring, plot = x$plot))
+# 
+# # merge
+# iem <- merge(iem, IEMSoil, by = c("insertion", "sampling", "ring", "plot"))
+# 
+# # save
+# save(iem, file = "output//data//FACE_IEM.RData")
+
 #######################
 # Excel summary table #
 #######################
