@@ -155,7 +155,7 @@ PltPr_Moist <- function(){
 PltPr_Moist()
 
 
-# predicted value for each block
+## plot predicted value for each block
 # data frame for predicted values from the final model
 
 # data fram for explanatory variables
@@ -180,7 +180,32 @@ BlkMoist <- function(variable, data){
   return(df)
 }
 
-expDF <- ldply(list("A", "B", "C"), function(x) BlkMoist(variable = x, data = expDF))
+expDF <- ldply(list("A", "B", "C"), 
+               function(x) BlkMoist(variable = x, data = expDF))
+
+# predicted values from the model above
+PredDF <- cbind(expDF, predict(Fml_ancv, 
+                               level = 0:3, 
+                               newdata = expDF))
+theme_set(theme_bw())
+p <- ggplot(PredDF, aes(x = Moist, y = exp(predict.block), col = co2))
+p + geom_line() +
+  geom_point(aes(x = Moist, y = po, col = co2), data = subsetD(extr, !pre)) + 
+  scale_color_manual("co2", values = c("blue", "red")) +
+  facet_grid(.~block)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 mlmer <- lmer(log(po) ~ co2 + log(Moist)
               + (1|block) + (1|ring)+ (1|id),
