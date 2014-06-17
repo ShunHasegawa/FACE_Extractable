@@ -94,25 +94,3 @@ source("R/Figs.R")
 #########
 # parcent change
 pchDF <- ddply(extr, .(ring, plot, co2, block, id), PerChange)
-
-# soil variable
-
-scatter.plot(~ no + pcNO + 
-              nh + pcNH +
-              p + pcP)
-
-boxplot(pcP ~ co2:block, data = subsetD(pchDF, !pre))
-boxplot(log(pcNH + 1) ~ co2:block, data = subsetD(pchDF, !pre))
-
-boxplot(no ~ co2:block, data = subsetD(pchDF, !pre))
-boxplot(log(pcNO+1) ~ co2:block, data = subsetD(pchDF, !pre))
-
-range(pchDF$pcNO, na.rm = TRUE)
-Delt
-range(pchDF$pcNH, na.rm = TRUE)
-
-boxplot(po ~ co2:block, data = subsetD(pchDF, !pre))
-
-
-
-
