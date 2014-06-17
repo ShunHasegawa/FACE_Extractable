@@ -63,12 +63,6 @@ load("Data/FACE_TDR_ProbeDF.RData")
 # subset soil
 TdrSoil <- subsetD(FACE_TDR_ProbeDF, Sample == "soil")
 
-# compute mean of soil variable for given period
-SoilPeriodMean <- function(data, rings, plots, Start, End){
-  sDF <- subset(data, Date >= Start & Date >= End & ring == rings & plot == plots)
-  ddply(sDF, .(ring, plot),function(x) colMeans(x[c("Moist", "Temp_Mean", "Temp_Min", "Temp_Max")], na.rm = TRUE))
-}
-
 # compute 3-month mean of soil variables for each plot
 extrSoil <- ddply(extr, .(date, ring, plot), 
                   function(x) SoilPeriodMean(
