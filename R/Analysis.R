@@ -16,6 +16,8 @@ library(ggplot2)
 library(scales)
 library(xtable)
 library(visreg)
+library(pbkrtest)
+library(lmerTest)
 
 source("R//functions.R")
 
