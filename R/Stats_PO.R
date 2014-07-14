@@ -9,17 +9,16 @@ bxplts(value= "po", data= subsetD(extr, pre))
   # use row data
 
 # different random factor strucures
-m1 <- lme(po ~ co2 * time, random = ~1|ring/plot, data = subsetD(extr, pre))
-m2 <- lme(po ~ co2 * time, random = ~1|ring, data = subsetD(extr, pre))
-m3 <- lme(po ~ co2 * time, random = ~1|id, data = subsetD(extr, pre))
-anova(m1, m2, m3)
-  # m2 is better
+m1 <- lme(po ~ co2 * time, random = ~1|block/ring/plot, data = subsetD(extr, pre))
+RndmComp(m1)$anova
+  # m5 is better, but use m1 for time being
 
 # autocorelation
-atcr.cmpr(m2, rndmFac="ring")$models
+atml <- atcr.cmpr(m1)
+atml$models
   # no need for autocorrelation
 
-Iml_pre <- m2
+Iml_pre <- atml[[1]]
 
 # The starting model is:
 Iml_pre$call
@@ -54,17 +53,16 @@ bxplts(value= "po", data= subsetD(extr, post))
   # log seems better
 
 # different random factor strucures
-m1 <- lme(po^(-0.1818) ~ co2 * time, random = ~1|ring/plot, data = subsetD(extr, post))
-m2 <- lme(po^(-0.1818) ~ co2 * time, random = ~1|ring, data = subsetD(extr, post))
-m3 <- lme(po^(-0.1818) ~ co2 * time, random = ~1|id, data = subsetD(extr, post))
-anova(m1, m2, m3)
-  # m1 is better
+m1 <- lme(log(po) ~ co2 * time, random = ~1|block/ring/plot, data = subsetD(extr, post))
+RndmComp(m1)$anova
+# m3 is better, but use m1 for time being
 
 # autocorelation
-atcr.cmpr(m1, rndmFac="ring/plot")$models
+atml <- atcr.cmpr(m1)
+atml$models
   # no need of autocorrelation
 
-Iml_post <- m1
+Iml_post <- atml[[1]]
 
 # The starting model is:
 Iml_post$call
@@ -105,53 +103,34 @@ qqline(residuals.lm(Fml_post))
 # Ancova #
 ##########
 # plot against soil varriable
-scatterplotMatrix(~ po + log(Moist) + Temp_Max + Temp_Mean + Temp_Min,
-                  diag = "boxplot", 
-                  subsetD(extr, !pre))
-
 scatterplotMatrix(~ log(po) + log(Moist) + Temp_Max + Temp_Mean + Temp_Min,
-                  diag = "boxplot", 
-                  subsetD(extr, !pre))
-
-# moisture seems to have a positive effect
+                  diag = "boxplot", postDF)
+scatterplotMatrix(~ log(po) + Moist + Temp_Max + Temp_Mean + Temp_Min,
+                  diag = "boxplot", postDF)
 
 # plot for each plot against soil variables
 print(xyplot(log(po) ~ log(Moist) | ring + plot, subsetD(extr, !pre), type = c("r", "p")))
+print(xyplot(log(po) ~ Temp_Mean | ring + plot, subsetD(extr, !pre), type = c("r", "p")))
 
 # analysis
-# Note Temp_Max and log(Moist) appears to be correlated so shouln't be 
-# placed in a multiple regression model
-Iml_ancv <- lme(log(po) ~ co2 * log(Moist), 
-                random = ~1|block/ring/plot,  
-                data = subsetD(extr, !pre))
+Iml_ancv <- lmer(log(po) ~ co2 * (log(Moist) + Temp_Mean) + 
+                   (1|block) + (1|ring) + (1|id), data = postDF)
 Anova(Iml_ancv)
-Fml_ancv <- MdlSmpl(Iml_ancv)$model.reml
+Fml_ancv <- stepLmer(Iml_ancv)
 Anova(Fml_ancv)
-summary(Fml_ancv)
+Anova(Fml_ancv, test.statistic = "F")
+
 
 # main effects
 plot(allEffects(Fml_ancv))
 
 ## plot predicted value
-Visreg_Moist(Fml_ancv, trans = exp, orginalData = extr)
 
-## plot predicted value for each block
-
-# data frame with predicted values
-PredDF <- PredVal(data = extr, model = Fml_ancv)
-
-theme_set(theme_bw())
-p <- ggplot(PredDF, aes(x = Moist, y = exp(predict.block), col = co2))
-pl <- p + geom_line() +
-  geom_point(aes(x = Moist, y = po, col = co2), data = subsetD(extr, !pre)) + 
-  scale_color_manual("co2", values = c("blue", "red")) +
-  facet_grid(.~block)
 
 # model diagnosis
 plot(Fml_ancv)
-qqnorm(Fml_ancv, ~ resid(.)|id)
-qqnorm(residuals.lm(Fml_ancv))
-qqline(residuals.lm(Fml_ancv))
+qqnorm(resid(Fml_ancv))
+qqline(resid(Fml_ancv))
 
 ## ----Stat_FACE_Extr_Phosphate_PreCO2Smmry
 # The starting model is:
@@ -176,13 +155,12 @@ FACE_Extr_PostCO2_PO_CntrstDf
 
 ## ---- Stat_FACE_Extr_Phosphate_postCO2_withSoilVarSmmry
 # The initial model is
-Iml_ancv$call
+Iml_ancv@call
 Anova(Iml_ancv)
 
 # The final model is
-Fml_ancv$call
+Fml_ancv@call
 Anova(Fml_ancv)
 
 ## plot predicted value for each block
-pl
 
