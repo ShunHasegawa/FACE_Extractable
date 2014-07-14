@@ -396,3 +396,37 @@ PredVal <- function(data, model){
   return(PredDF)
 }
 
+###############################################
+# Plot soil variable for each incubation time #
+###############################################
+PltSoilVar <- function(data, var, tdrData, backdates = 3 * 4 * 7, linealpha = .5){
+  # backdates: How many days back the soil variable means are calculated (3*4*7
+  # = 3 months)
+  df <- ddply(data, c("date", var),
+              function(x) colMeans(x[c("Moist", "Temp_Mean", "Temp_Min", "Temp_Max")],
+                                   na.rm = TRUE))
+  df <- within(df, {
+    strtDay <- date - backdates
+    middleDay <- as.Date(rowMeans(cbind(as.numeric(date), as.numeric(strtDay)), na.rm = TRUE), origin)
+  })
+  
+  SoilVarMlt <- melt(df, id = c(var, "date", "strtDay", "middleDay"))
+  SoilVarMlt <- within(SoilVarMlt, {
+    type <- factor(ifelse(variable != "Moist", "Temp", "Moist"))
+  })
+  
+  p <- ggplot(SoilVarMlt, aes_string(x = "middleDay", y = "value", shape = "variable", col = var))
+  pl <- p + geom_point() +
+    facet_grid(type ~., scale = "free_y") +
+    labs(x = "Time", y = NULL) +
+    geom_vline(xintercept = as.numeric(as.Date("2012-09-18")), linetype = "dashed", col = "black") +
+    scale_x_date(breaks= date_breaks("2 month"),
+                 labels = date_format("%b-%y"),
+                 limits = as.Date(c("2012-7-1", "2014-4-2"))) +
+    theme(axis.text.x  = element_text(angle=45, vjust= 1, hjust = 1)) +
+    geom_line(aes_string(x = "Date", y = "value", group = var), data = tdrData, alpha = linealpha) +
+    geom_vline(xintercept = c(unique(as.numeric(SoilVarMlt$strtDay)), max(as.numeric(SoilVarMlt$date))),
+               col = "gray30", size = .5,linetype = "dotted")
+  pl
+}
+
