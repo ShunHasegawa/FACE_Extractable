@@ -27,6 +27,10 @@ source("R//functions.R")
 # source("R/ProcessDF.R")
 load("Output//Data//extractable.RData")
 
+# postCO2 data frame for ancova with soil variables
+postDF <- subsetD(extr, !pre)
+save(postDF, file = "Output//Data/postDF.RData")
+
 #######################
 # Excel summary table #
 #######################
