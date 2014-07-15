@@ -1,9 +1,9 @@
 
 # Soil variables (i.g. moisture and temperature) will be used as covariates. I 
-# need to deternmine how many days to go back from the sampling dates before 
-# calculating their means for given period. The number of days to be used will 
+# need to deternmine how many days to go back from the sampling dates in order 
+# to calculate their means for given period. The number of days to be used will
 # be determined by AIC valuse for models with different periods used to obtain
-# soil var averages.
+# soil variable averages.
 
 #########################################
 # Process soil variable data for ANCOVA #
@@ -19,80 +19,65 @@ TdrSoil <- subsetD(FACE_TDR_ProbeDF, Sample == "soil")
 ##################################################
 SoilVarPeriMean <- function(data, period){ 
   # period = number of days to back from sampling date to get average soil vars
-  ddply(data, .(date, ring, plot),
-        function(x) SoilPeriodMean(
-          data = TdrSoil, 
-          Start = x$date - period,
-          End = x$date, 
-          rings = x$ring, 
-          plot = x$plot))
+  df <- ddply(data, .(date, ring, plot),
+              function(x) SoilPeriodMean(
+                data = TdrSoil, 
+                Start = x$date - period,
+                End = x$date, 
+                rings = x$ring, 
+                plot = x$plot))
+  merge(data, df, by = c("date", "ring", "plot"))
 }
   
-# merge
-LmrMultPeri <- function(period){
-  df <- merge(postDF, SoilVarPeriMean(postDF, period = period), by = c("date", "ring", "plot"))
-#   m1 <- lmer(log(po) ~ co2 + log(Moist) + Temp_Mean + (1|block) + (1|ring) + (1|id), data = df)
-  return(df)
+# Using the above function create soil variables for given period and merge with
+# data. Then run this for different periods and store all the resulted data
+# frames in a sigle list
+
+LstDF_SoilVar <- llply(seq(0, 90, 1), 
+                       function(x) SoilVarPeriMean(data = data, period = x), 
+                       .progress = "text")
+names(LstDF_SoilVar) <- seq(0, 90, 1)
+
+###############################################
+# Run lmer for each data frame and return AIC #
+###############################################
+LmrAicComp <- function(ListDF, formula){
+  # lmer test for each data set
+  LstLmrs <- llply(ListDF, 
+                   function(x) lmer(formula, data = x),
+                   .progress = "text")
+  names(LstLmrs) <- names(ListDF)
+  
+  # plot AIC
+  aicDF <- ldply(LstLmrs, AIC)
+  names(aicDF) <- c("period", "AICs")
+  plot(AICs ~ period, data = aicDF, xlab = "N of Days back from sampling")
+  
+  
+  # lmer for the lowest aic
+  df <- ListDF[[which(aicDF$AICs == min(aicDF$AICs))]]
+  Iml <- lmer(formula, data = df)
+  Fml <- stepLmer(Iml)
+  return(list("Initial model" = Iml, "Final model" = Fml, "Data" = df))
 }
 
 
+ListDF <- LstDF_SoilVar(data = postDF, period = 30)
 
-test <- llply(seq(0, 5, 1), 
-              function(x) merge(postDF, SoilVarPeriMean(postDF, period = x), 
-                                by = c("date", "ring", "plot")), 
-              .progress = "text")
-names(test) <- seq(0, 5, 1)
+test <- LmrAicComp(ListDF = ListDF,
+                   formula = formula(log(po) ~ co2 * (log(Moist) + Temp_Mean) + 
+                     (1|block) + (1|ring) + (1|id)))
 
+test <- LmrAicComp(ListDF = LstDF[1:30],
+                   formula = formula(log(po) ~ co2 * (Moist + Temp_Mean) + 
+                     (1|block) + (1|ring) + (1|id)))
 
-LstLmrs <- llply(test, 
-                 function(x) lmer(log(po) ~ co2 + log(Moist) + Temp_Mean + (1|block) + (1|ring) + (1|id), data = x),
-                 .progress = "text")
-names(LstLmrs) <- seq(0, 5, 1)
-
-aicDF <- ldply(LstLmrs, AIC)
-names(aicDF) <- c("period", "AICs")
-
-plot(AICs ~ period, data = aicDF)
-
-aicDF[which(aicDF$AICs == min(aicDF$AICs)),]
+test <- LmrAicComp(ListDF = LstDF[1:30],
+                   formula = formula(log(no) ~ co2 * (log(Moist) + Temp_Mean) + 
+                     (1|block) + (1|ring) + (1|id)))
+Iml <- test[[1]]
+Fml <- test[[2]]
+Anova(Fml, test.statistic = "F")
+plot(Fml)
 
 
-a <- test[[which(aicDF$AICs == min(aicDF$AICs))]]
-str(a)
-m1 <- lmer(log(po) ~ co2 * (log(Moist) + Temp_Mean) + (1|block) + (1|ring) + (1|id), 
-           data = a)
-
-m1 <- lmer(log(po) ~ co2 * Temp_Mean + (1|block) + (1|ring) + (1|id), 
-           data = a)
-
-b <- 
-m1 <- lmer(log(po) ~ co2 * (log(Moist) + Temp_Mean) + (1|block) + (1|ring) + (1|id), 
-           data = a)
-
-plot(log(a$Moist))
-
-Anova(m1)
-
-summary(a)
-head(a)
-te <- step(m1, reduce.random = FALSE, ddf = "Kenward-Roger")
-Anova(te$model)
-te <- step(m1, ddf = "Kenward-Roger")
-
-m2 <- stepLmer(m1)
-
-df <- merge(postDF, SoilVarPeriMean(postDF, period = 6), by = c("date", "ring", "plot"))
-m1 <- lmer(log(po) ~ co2 * (log(Moist) + Temp_Mean) + (1|block) + (1|ring) + (1|id), data = df)
-AIC(m1)
-Anova(m1)
-m2 <- stepLmer(m1)
-Anova(m2)
-
-
-
-Iml_ancv <- lmer(log(po) ~ co2 * (log(Moist) + Temp_Mean) + 
-                   (1|block) + (1|ring) + (1|id), data = postDF)
-?llply
-
-names(LstLmrs2)
-LstLmrs2
