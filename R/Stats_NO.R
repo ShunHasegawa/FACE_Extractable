@@ -103,26 +103,38 @@ qqline(residuals.lm(Fml_post))
 ##########
 # Ancova #
 ##########
+# Determine how many days to go back from the sampling dates to calculate soil
+# variables
+m1 <- LmrAicComp(ListDF = LstDF_SoilVar, 
+                 formula = formula(log(no) ~ co2 * (log(Moist) + Temp_Mean) + 
+                                     (1|block) + (1|ring) + (1|id)))
+aicDF <- m1$AICdf
+aicDF[which(aicDF$AICs == min(aicDF$AICs)), ]
+# 89 days gives the lowest AIC, not sure if it makes sense but use this for time
+# being
+df <- LstDF_SoilVar[[which(aicDF$AICs == min(aicDF$AICs))]]
+
+## check linearity agains soil variables
 
 # plot against soil varriable
-scatterplotMatrix(~ no + log(Moist) + Temp_Max + Temp_Mean + Temp_Min,
-                  diag = "boxplot", 
-                  subsetD(extr, !pre))
-
 scatterplotMatrix(~ log(no) + log(Moist) + Temp_Max + Temp_Mean + Temp_Min,
-                  diag = "boxplot", 
-                  subsetD(extr, !pre))
-# plot for each plot against soil variables
-print(xyplot(log(no) ~ log(Moist) | ring + plot, subsetD(extr, !pre), type = c("r", "p")))
+                  diag = "boxplot", df)
 
-# analysis
-# Note Temp_Max and log(Moist) appears to be correlated so shouln't be 
-# placed in a multiple regression model
-Iml_ancv <- lme(log(no) ~ co2 * log(Moist), 
-                random = ~1|block/ring/plot,  
-                data = subsetD(extr, !pre))
+# plot for each plot against soil variables
+print(xyplot(log(no) ~ log(Moist) | ring + plot, df, type = c("r", "p")))
+print(xyplot(log(no) ~ Temp_Mean | ring + plot, df, type = c("r", "p")))
+# looks fine
+
+## Analysis
+Iml_ancv <- lmer(log(no) ~ co2 * (log(Moist) + Temp_Mean) + 
+                   (1|block) + (1|ring) + (1|id), data = df)
 Anova(Iml_ancv)
-# no need to use covariates
+plot(allEffects(Iml_ancv))
+plot(Iml_ancv)
+qqnorm(resid(Iml_ancv))
+qqline(resid(Iml_ancv))
+
+
 
 ## ----Stat_FACE_Extr_Nitrate_PreCO2Smmry
 # The starting model is:
