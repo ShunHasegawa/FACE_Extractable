@@ -136,12 +136,12 @@ print(xyplot(sqrt(nh) ~ Temp_Max | ring + plot, df, type = c("r", "p")))
 
 ## Analysis
 Iml_ancv <- lmer(sqrt(nh) ~ co2 * (log(Moist) + Temp_Mean) + (1|block) + (1|ring) + (1|id), data = df)
-Anova(m1)
+Anova(Iml_ancv)
 
 # model simplification: Note that because no variation is explained by random
 # factors, I can't use stepLmer.
 m2 <- lmer(sqrt(nh) ~ co2 *Temp_Mean + log(Moist) + (1|block) + (1|ring) + (1|id), data = df)
-anova(m1, m2)
+anova(Iml_ancv, m2)
 # remove co2:log(Moist)
 Anova(m2)
 Anova(m2, test.statistic = "F")
@@ -167,7 +167,18 @@ qqnorm(resid(Fml_ancv))
 qqline(resid(Fml_ancv))
 
 # 95 % CI for each estimate
+ciDF <- CIdf(Fml_ancv)
 
+# calculate actual values
+Est.val <- rbind(
+  int = ciDF[1, ],
+  co2elev = ciDF[2, ] + ciDF[1, 3],
+  Temp_Mean = ciDF[3, ],
+  log.Moist = ciDF[4, ],
+  co2elev.Temp_Mean = ciDF [5, ] + ciDF[3, 3]
+)
+
+Est.val
 
 ## ----Stat_FACE_Extr_Ammonium_PreCO2Smmry
 # The starting model is:
@@ -191,5 +202,16 @@ Anova(Fml_post)
 FACE_Extr_PostCO2_NH_CntrstDf
 
 ## ---- Stat_FACE_Extr_Ammonium_postCO2_withSoilVarSmmry
-Iml_ancv$call
+
+# Initial model
+Iml_ancv@call
 Anova(Iml_ancv)
+
+# Final model
+Fml_ancv@call
+Anova(Fml_ancv)
+
+# 95 % CI
+Est.val
+
+
