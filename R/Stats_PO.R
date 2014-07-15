@@ -102,30 +102,29 @@ qqline(residuals.lm(Fml_post))
 ##########
 # Ancova #
 ##########
+
+# Determine how many days to go back from the sampling dates to calculate soil
+# variables
+m1 <- LmrAicComp(ListDF = LstDF_SoilVar, 
+                 formula = formula(log(po) ~ co2 * (log(Moist) + Temp_Mean) + 
+                                       (1|block) + (1|ring) + (1|id)))
+m1$AICdf
+# 90 days showed the lowest AIC... but not sure if it makes sense but the result
+# would be the same when you use 30 days anyway
+Iml_ancv <- m1$Initial
+Fml_ancv <- m1$Final
+Anova(Fml_ancv)
+
 # plot against soil varriable
 scatterplotMatrix(~ log(po) + log(Moist) + Temp_Max + Temp_Mean + Temp_Min,
-                  diag = "boxplot", postDF)
-scatterplotMatrix(~ log(po) + Moist + Temp_Max + Temp_Mean + Temp_Min,
-                  diag = "boxplot", postDF)
+                  diag = "boxplot", m1$Data)
 
 # plot for each plot against soil variables
-print(xyplot(log(po) ~ log(Moist) | ring + plot, subsetD(extr, !pre), type = c("r", "p")))
-print(xyplot(log(po) ~ Temp_Mean | ring + plot, subsetD(extr, !pre), type = c("r", "p")))
-
-# analysis
-Iml_ancv <- lmer(log(po) ~ co2 * (log(Moist) + Temp_Mean) + 
-                   (1|block) + (1|ring) + (1|id), data = postDF)
-Anova(Iml_ancv)
-Fml_ancv <- stepLmer(Iml_ancv)
-Anova(Fml_ancv)
-Anova(Fml_ancv, test.statistic = "F")
-
+print(xyplot(log(po) ~ log(Moist) | ring + plot, m1$Data, type = c("r", "p")))
+print(xyplot(log(po) ~ Temp_Mean | ring + plot, m1$Data, type = c("r", "p")))
 
 # main effects
 plot(allEffects(Fml_ancv))
-
-## plot predicted value
-
 
 # model diagnosis
 plot(Fml_ancv)
@@ -161,6 +160,5 @@ Anova(Iml_ancv)
 # The final model is
 Fml_ancv@call
 Anova(Fml_ancv)
-
-## plot predicted value for each block
+Anova(Fml_ancv, test.statistic = "F")
 
