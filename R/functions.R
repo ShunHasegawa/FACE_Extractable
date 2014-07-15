@@ -341,6 +341,29 @@ SoilVarPeriMean <- function(data, period){
   merge(data, df, by = c("date", "ring", "plot"))
 }
 
+###############################################
+# Run lmer for each data frame and return AIC #
+###############################################
+LmrAicComp <- function(ListDF, formula){
+  # lmer test for each data set
+  LstLmrs <- llply(ListDF, 
+                   function(x) lmer(formula, data = x),
+                   .progress = "text")
+  names(LstLmrs) <- names(ListDF)
+  
+  # plot AIC
+  aicDF <- ldply(LstLmrs, AIC)
+  names(aicDF) <- c("period", "AICs")
+  plot(AICs ~ period, data = aicDF, xlab = "N of Days back from sampling")
+  
+  
+  # lmer for the lowest aic
+  df <- ListDF[[which(aicDF$AICs == min(aicDF$AICs))]]
+  Iml <- lmer(formula, data = df)
+  Fml <- stepLmer(Iml)
+  return(list("Initial model" = Iml, "Final model" = Fml, "Data" = df))
+}
+
 #########################
 # plot predicted values #
 #########################
