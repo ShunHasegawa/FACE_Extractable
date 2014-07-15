@@ -325,7 +325,20 @@ PerChange <- function(data){
 ##################################################
 SoilPeriodMean <- function(data, rings, plots, Start, End){
   sDF <- subset(data, Date >= Start & Date <= End & ring == rings & plot == plots)
-  data.frame(colMeans(sDF[c("Moist", "Temp_Mean", "Temp_Min", "Temp_Max")], na.rm = TRUE))
+  colMeans(sDF[c("Moist", "Temp_Mean", "Temp_Min", "Temp_Max")], na.rm = TRUE)
+}
+
+# Apply the above function to data frame and merge
+SoilVarPeriMean <- function(data, period){ 
+  # period = number of days to back from sampling date to get average soil vars
+  df <- ddply(data, .(date, ring, plot),
+              function(x) SoilPeriodMean(
+                data = TdrSoil, 
+                Start = x$date - period,
+                End = x$date, 
+                rings = x$ring, 
+                plot = x$plot))
+  merge(data, df, by = c("date", "ring", "plot"))
 }
 
 #########################
