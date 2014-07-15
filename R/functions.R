@@ -329,11 +329,11 @@ SoilPeriodMean <- function(data, rings, plots, Start, End){
 }
 
 # Apply the above function to data frame and merge
-SoilVarPeriMean <- function(data, period){ 
+SoilVarPeriMean <- function(data, period, SoilData){ 
   # period = number of days to back from sampling date to get average soil vars
   df <- ddply(data, .(date, ring, plot),
               function(x) SoilPeriodMean(
-                data = TdrSoil, 
+                data = SoilData, 
                 Start = x$date - period,
                 End = x$date, 
                 rings = x$ring, 
