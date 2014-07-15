@@ -1,7 +1,10 @@
 # TDR soil data
-head(TdrSoil)
+load("Data/FACE_TDR_ProbeDF.RData")
 
-# compute 3-month mean of soil variables for each plot
+# subset soil
+TdrSoil <- subsetD(FACE_TDR_ProbeDF, Sample == "soil")
+
+head(TdrSoil)
 
 ##################################################
 # Create mean of soil variable for ginven period #
