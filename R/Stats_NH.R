@@ -105,28 +105,69 @@ qqline(residuals.lm(Fml_post))
 ##########
 # Ancova #
 ##########
-# plot against soil varriable
-scatterplotMatrix(~ nh + log(Moist) + Temp_Max + Temp_Mean + Temp_Min,
-                  diag = "boxplot", 
-                  subsetD(extr, !pre))
+# Determine how many days to go back from the sampling dates to calculate soil
+# variables
 
+# m1 <- LmrAicComp(ListDF = LstDF_SoilVar, 
+#                  formula = formula(sqrt(nh) ~ co2 * (log(Moist) + Temp_Mean) + 
+#                                      (1|block) + (1|ring) + (1|id)))
+
+# The above code return erorr message as random factors don't explain any 
+# variation. Redo manually
+
+ListLmr <- llply(LstDF_SoilVar, function(x) lmer(sqrt(nh) ~ co2 * (log(Moist) + Temp_Mean) + 
+                                                   (1|block) + (1|ring) + (1|id), data = x))
+aicDF <- ldply(ListLmr, AIC)
+aicDF[which(aicDF$V1 == min(aicDF$V1)),]
+# 69 days gives the lowest AIC
+
+df <- LstDF_SoilVar[[which(aicDF$V1 == min(aicDF$V1))]]
+
+## check the linearlity against soil variables
+
+# plot against soil varriable
 scatterplotMatrix(~ sqrt(nh) + log(Moist) + Temp_Max + Temp_Mean + Temp_Min,
-                  diag = "boxplot", 
-                  subsetD(extr, !pre))
+                  diag = "boxplot", df)
 
 # plot for each plot against soil variables
-print(xyplot(sqrt(nh) ~ log(Moist) | ring + plot, subsetD(extr, !pre), type = c("r", "p")))
-print(xyplot(sqrt(nh) ~ Temp_Max | ring + plot, subsetD(extr, !pre), type = c("r", "p")))
+print(xyplot(sqrt(nh) ~ log(Moist) | ring + plot, df, type = c("r", "p")))
+print(xyplot(sqrt(nh) ~ Temp_Max | ring + plot, df, type = c("r", "p")))
+# looks fine
 
-# analysis
-Iml_ancv <- lme(sqrt(nh) ~ co2 * log(Moist), 
-                random = ~1|block/ring/plot,  
-                data = subsetD(extr, !pre))
-Anova(Iml_ancv)
-Fml_ancv <- MdlSmpl(Iml_ancv)$model.reml
+## Analysis
+Iml_ancv <- lmer(sqrt(nh) ~ co2 * (log(Moist) + Temp_Mean) + (1|block) + (1|ring) + (1|id), data = df)
+Anova(m1)
+
+# model simplification: Note that because no variation is explained by random
+# factors, I can't use stepLmer.
+m2 <- lmer(sqrt(nh) ~ co2 *Temp_Mean + log(Moist) + (1|block) + (1|ring) + (1|id), data = df)
+anova(m1, m2)
+# remove co2:log(Moist)
+Anova(m2)
+Anova(m2, test.statistic = "F")
+
+m3 <- lmer(sqrt(nh) ~ co2 + Temp_Mean + log(Moist) + (1|block) + (1|ring) + (1|id), data = df)
+anova(m2, m3)
+Anova(m3)
+Anova(m3, test.statistic = "F")
+
+# co2:Temp_Mean is marginal. Removing this increases AIC. Keep this for time being
+
+Fml_ancv <- m2
 Anova(Fml_ancv)
-summary(Fml_ancv)
-# no need to use covariates
+Anova(Fml_ancv, test.statistic = "F")
+
+# main effect
+plot(allEffects(Fml_ancv))
+
+# model diagnosis
+plot(Fml_ancv)
+  # little bit wedged..
+qqnorm(resid(Fml_ancv))
+qqline(resid(Fml_ancv))
+
+# 95 % CI for each estimate
+
 
 ## ----Stat_FACE_Extr_Ammonium_PreCO2Smmry
 # The starting model is:
