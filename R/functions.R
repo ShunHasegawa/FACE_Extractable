@@ -430,3 +430,39 @@ PltSoilVar <- function(data, var, tdrData, backdates = 3 * 4 * 7, linealpha = .5
   pl
 }
 
+
+##############################################
+## Plot raw data and incubation-period mean ##
+##############################################
+
+PltSoilVar_Period <- function(data, lab){
+  ## co2 ##
+  pl <- PltSoilVar(data = data, var = "co2", tdrData = soilTDR_co2Mean, linealpha = .5) +
+    scale_color_manual(values = c("blue", "red"), expression(CO[2]~trt), 
+                       labels = c("Ambient", expression(eCO[2]))) +
+    ggtitle(paste(lab, "Mean soil moisture and temperature"))
+  ggsavePP(filename = paste("output//figs/FACE_Extractable_SoilVarMonth_CO2", lab, sep = "_"), 
+           plot = pl, width = 6, height = 4)
+  
+  ## ring ##
+  pl <- PltSoilVar(data = data, var = "ring", tdrData = soilTDR_RngMean, linealpha = .3) +
+    scale_color_manual(values = palette(), "Ring", labels = paste("Ring", c(1:6), sep = "_")) +
+    ggtitle(paste(lab, "Mean soil moisture and temperature"))
+  
+  ggsavePP(filename = paste("output//figs/FACE_Extractable_SoilVarMonth_Ring", lab, sep = "_"),
+           plot = pl, width = 6, height = 4)
+  
+  ############################
+  # Plot Moist against  Temp #
+  ############################
+  
+  p <- ggplot(postDF, aes(x = Temp_Mean, y = log(Moist), col = ring))
+  p2 <- p + geom_point(alpha = .5) 
+  
+  pl  <- p2 + facet_wrap( ~ ring)
+  ggsavePP(file = paste("output/figs/FACE_Extractable_SoilVar_Ring", lab, sep = "_"), 
+           plot = pl, width = 6, height = 6)
+  
+  ggsavePP(file = paste("output/figs/FACE_Extractable_SoilVar", lab, sep = "_"), plot = p2, width = 6, height = 6)
+}
+

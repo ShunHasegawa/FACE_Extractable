@@ -66,32 +66,4 @@ soilTDRdf$type <- factor(ifelse(soilTDRdf$variable == "Moist", "Moist", "Temp"))
 soilTDR_RngMean <- ddply(soilTDRdf, .(Date, co2, ring, variable, type), summarise, value = mean(value, na.rm = TRUE))
 soilTDR_co2Mean <- ddply(soilTDR_RngMean, .(Date, co2, variable, type), summarise, value = mean(value, na.rm = TRUE))
 
-##############################################
-## Plot raw data and incubation-period mean ##
-##############################################
 
-## co2 ##
-pl <- PltSoilVar(data = extr, var = "co2", tdrData = soilTDR_co2Mean, linealpha = .5) +
-  scale_color_manual(values = c("blue", "red"), expression(CO[2]~trt), 
-                     labels = c("Ambient", expression(eCO[2]))) +
-  ggtitle("3-month Mean soil moisture and temperature")
-ggsavePP(filename = "output//figs/FACE_Extractable_SoilVarMonth_CO2", plot = pl, width = 6, height = 4)
-
-## ring ##
-pl <- PltSoilVar(data = extr, var = "ring", tdrData = soilTDR_RngMean, linealpha = .3) +
-  scale_color_manual(values = palette(), "Ring", labels = paste("Ring", c(1:6), sep = "_")) +
-  ggtitle("3-month Mean soil moisture and temperature")
-
-ggsavePP(filename = "output//figs/FACE_Extractable_SoilVarMonth_Ring", plot = pl, width = 6, height = 4)
-
-############################
-# Plot Moist against  Temp #
-############################
-
-p <- ggplot(postDF, aes(x = Temp_Mean, y = log(Moist), col = ring))
-p2 <- p + geom_point(alpha = .5) 
-
-pl  <- p2 + facet_wrap( ~ ring)
-ggsavePP(file = "output/figs/FACE_Extractable_SoilVar_Ring", plot = pl, width = 6, height = 6)
-
-ggsavePP(file = "output/figs/FACE_Extractable_SoilVar", plot = p2, width = 6, height = 6)
