@@ -111,9 +111,8 @@ m1 <- LmrAicComp(ListDF = LstDF_SoilVar,
 m1$AICdf
 # 90 days showed the lowest AIC... but not sure if it makes sense but the result
 # would be the same when you use 30 days anyway
-Iml_ancv <- m1$Initial
-Fml_ancv <- m1$Final
-Anova(Fml_ancv)
+
+## checkout for linearity against soil variables
 
 # plot against soil varriable
 scatterplotMatrix(~ log(po) + log(Moist) + Temp_Max + Temp_Mean + Temp_Min,
@@ -122,6 +121,12 @@ scatterplotMatrix(~ log(po) + log(Moist) + Temp_Max + Temp_Mean + Temp_Min,
 # plot for each plot against soil variables
 print(xyplot(log(po) ~ log(Moist) | ring + plot, m1$Data, type = c("r", "p")))
 print(xyplot(log(po) ~ Temp_Mean | ring + plot, m1$Data, type = c("r", "p")))
+# looks fine
+
+## Analysis
+Iml_ancv <- m1$Initial
+Fml_ancv <- m1$Final
+Anova(Fml_ancv)
 
 # main effects
 plot(allEffects(Fml_ancv))
