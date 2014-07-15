@@ -361,7 +361,7 @@ LmrAicComp <- function(ListDF, formula){
   df <- ListDF[[which(aicDF$AICs == min(aicDF$AICs))]]
   Iml <- lmer(formula, data = df)
   Fml <- stepLmer(Iml)
-  return(list("Initial model" = Iml, "Final model" = Fml, "Data" = df))
+  return(list("Initial model" = Iml, "Final model" = Fml, "Data" = df, "AICdf" = aicDF))
 }
 
 #########################
