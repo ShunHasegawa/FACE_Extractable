@@ -325,7 +325,7 @@ PerChange <- function(data){
 ##################################################
 SoilPeriodMean <- function(data, rings, plots, Start, End){
   sDF <- subset(data, Date >= Start & Date <= End & ring == rings & plot == plots)
-  colMeans(sDF[c("Moist", "Temp_Mean", "Temp_Min", "Temp_Max")], na.rm = TRUE)
+  data.frame(colMeans(sDF[c("Moist", "Temp_Mean", "Temp_Min", "Temp_Max")], na.rm = TRUE))
 }
 
 #########################
