@@ -9,17 +9,16 @@ bxplts(value= "nh", data= subsetD(extr, pre))
 # row data seems better
 
 # different random factor strucures
-m1 <- lme(nh ~ co2 * time, random = ~1|ring/plot, data = subsetD(extr, pre))
-m2 <- lme(nh ~ co2 * time, random = ~1|ring, data = subsetD(extr, pre))
-m3 <- lme(nh ~ co2 * time, random = ~1|id, data = subsetD(extr, pre))
-anova(m1, m2, m3)
-  # m2 is better
+m1 <- lme(nh ~ co2 * time, random = ~1|block/ring/plot, data = subsetD(extr, pre))
+RndmComp(m1)$anova
+  # model2, 3 are better but use m1 for the time being
 
 # autocorelation
-atcr.cmpr(m2, rndmFac="ring")$models
+atml <- atcr.cmpr(m1)
+atml$models
   # no need for autocorrelation
 
-Iml_pre <- m2
+Iml_pre <- atml[[1]]
 
 # The starting model is:
 Iml_pre$call
@@ -54,22 +53,21 @@ bxplts(value= "nh", data= subsetD(extr, post))
   # sqrt seems better
 
 # different random factor strucures
-m1 <- lme(sqrt(nh) ~ co2 * time, random = ~1|ring/plot, data = subsetD(extr, post))
-m2 <- lme(sqrt(nh) ~ co2 * time, random = ~1|ring, data = subsetD(extr, post))
-m3 <- lme(sqrt(nh) ~ co2 * time, random = ~1|id, data = subsetD(extr, post))
-anova(m1, m2, m3)
-  # m3 is better
+m1 <- lme(sqrt(nh) ~ co2 * time, random = ~1|block/ring/plot, data = subsetD(extr, post))
+RndmComp(m1)$anova
+  # m5 is better but use m1 for the time being
 
 # autocorelation
-atcr.cmpr(m3, rndmFac="id")$models
-  # model 5 looks better
+atml <- atcr.cmpr(m1)
+atml$models
+anova(atml[[1]], atml[[5]])
+  # model5 is better, but no significant difference so use m1
 
-Iml_post <- atcr.cmpr(m2, rndmFac="ring")[[5]]
+Iml_post <- atml[[1]]
 
 # The starting model is:
 Iml_post$call
 Anova(Iml_post)
-
 
 # model simplification
 MdlSmpl(Iml_post)
@@ -115,7 +113,7 @@ qqline(residuals.lm(Fml_post))
 # The above code return erorr message as random factors don't explain any 
 # variation. Redo manually
 
-ListLmr <- llply(LstDF_SoilVar, function(x) lmer(sqrt(nh) ~ co2 * (log(Moist) + Temp_Mean) + 
+ListLmr <- llply(LstDF_SoilVar, function(x) lmer(sqrt(nh) ~ co2 * (Moist + Temp_Mean) + 
                                                    (1|block) + (1|ring) + (1|id), data = x))
 aicDF <- ldply(ListLmr, AIC)
 aicDF[which(aicDF$V1 == min(aicDF$V1)),]
@@ -126,27 +124,27 @@ df <- LstDF_SoilVar[[which(aicDF$V1 == min(aicDF$V1))]]
 ## check the linearlity against soil variables
 
 # plot against soil varriable
-scatterplotMatrix(~ sqrt(nh) + log(Moist) + Temp_Max + Temp_Mean + Temp_Min,
+scatterplotMatrix(~ sqrt(nh) + Moist + Temp_Max + Temp_Mean + Temp_Min,
                   diag = "boxplot", df)
 
 # plot for each plot against soil variables
-print(xyplot(sqrt(nh) ~ log(Moist) | ring + plot, df, type = c("r", "p")))
+print(xyplot(sqrt(nh) ~ Moist | ring + plot, df, type = c("r", "p")))
 print(xyplot(sqrt(nh) ~ Temp_Max | ring + plot, df, type = c("r", "p")))
 # looks fine
 
 ## Analysis
-Iml_ancv <- lmer(sqrt(nh) ~ co2 * (log(Moist) + Temp_Mean) + (1|block) + (1|ring) + (1|id), data = df)
+Iml_ancv <- lmer(sqrt(nh) ~ co2 * (Moist + Temp_Mean) + (1|block) + (1|ring) + (1|id), data = df)
 Anova(Iml_ancv)
 
 # model simplification: Note that because no variation is explained by random
 # factors, I can't use stepLmer.
-m2 <- lmer(sqrt(nh) ~ co2 *Temp_Mean + log(Moist) + (1|block) + (1|ring) + (1|id), data = df)
+m2 <- lmer(sqrt(nh) ~ co2 *Temp_Mean + Moist + (1|block) + (1|ring) + (1|id), data = df)
 anova(Iml_ancv, m2)
 # remove co2:log(Moist)
 Anova(m2)
 Anova(m2, test.statistic = "F")
 
-m3 <- lmer(sqrt(nh) ~ co2 + Temp_Mean + log(Moist) + (1|block) + (1|ring) + (1|id), data = df)
+m3 <- lmer(sqrt(nh) ~ co2 + Temp_Mean + Moist + (1|block) + (1|ring) + (1|id), data = df)
 anova(m2, m3)
 Anova(m3)
 Anova(m3, test.statistic = "F")
@@ -166,6 +164,28 @@ plot(Fml_ancv)
 qqnorm(resid(Fml_ancv))
 qqline(resid(Fml_ancv))
 
+## What if remove the one top outlier
+qqval <- qqnorm(resid(Fml_ancv))
+qqval$y[which(qqval$y == max(qqval$y))]
+
+newDF <- df
+newDF$nh[which(qqval$y == max(qqval$y))] <- NA
+m1 <- lmer(sqrt(nh) ~ co2 * (Moist + Temp_Mean) + (1|block) + (1|ring) + (1|id), data = newDF)
+m2 <- lmer(sqrt(nh) ~ co2 * Temp_Mean + Moist + (1|block) + (1|ring) + (1|id), data = newDF)
+anova(m1, m2)
+Anova(m2)
+m3 <- lmer(sqrt(nh) ~ co2 + Moist + Temp_Mean + (1|block) + (1|ring) + (1|id), data = newDF)
+anova(m2, m3)
+Anova(m3)
+Anova(m3, test.statistic = "F")
+plot(m3)
+qqnorm(resid(m3))
+qqline(resid(m3))
+plot(allEffects(m3))
+# This looks better so use this
+Iml_ancv <- m1
+Fml_ancv <- m3
+
 # 95 % CI for each estimate
 ciDF <- CIdf(Fml_ancv)
 
@@ -173,9 +193,8 @@ ciDF <- CIdf(Fml_ancv)
 Est.val <- rbind(
   int = ciDF[1, ],
   co2elev = ciDF[2, ] + ciDF[1, 3],
-  Temp_Mean = ciDF[3, ],
-  log.Moist = ciDF[4, ],
-  co2elev.Temp_Mean = ciDF [5, ] + ciDF[3, 3]
+  Moist = ciDF[3, ],
+  Temp_Mean = ciDF[4, ]
 )
 
 Est.val
