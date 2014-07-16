@@ -18,6 +18,7 @@ library(xtable)
 library(visreg)
 library(pbkrtest)
 library(lmerTest)
+library(quantmod)
 
 source("R//functions.R")
 
