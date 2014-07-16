@@ -10,32 +10,25 @@ bxplts(value= "no", data= subsetD(extr, pre))
   # log seems slightly better
 
 # different random factor strucures
-m1 <- lme(log(no) ~ co2 * time, random = ~1|ring/plot, data = subsetD(extr, pre))
-m2 <- lme(log(no) ~ co2 * time, random = ~1|ring, data = subsetD(extr, pre))
-m3 <- lme(log(no) ~ co2 * time, random = ~1|id, data = subsetD(extr, pre))
-anova(m1, m2, m3)
-  # m1 is better
+m1 <- lme(log(no) ~ co2 * time, random = ~1|block/ring/plot, data = subsetD(extr, pre))
+RndmComp(m1)$anova
+# model3 is the best but use m1 for the time being
 
 # autocorelation
-atcr.cmpr(m1, rndmFac="ring/plot")$models
-  # no need for correlation
+atml <- atcr.cmpr(m1)
+atml$models
+# no need for correlation
 
-Iml_pre <- m1
+Iml_pre <- atml[[1]]
 
 # The starting model is:
 Iml_pre$call
 Anova(Iml_pre)
 
 # model simplification
-MdlSmpl(Iml_pre)
-  # no factor was removed, but time:co2 is not 
-  # significant so remove
-
-spml <- update(MdlSmpl(Iml_pre)$model.ml, ~. - time:co2)
-MdlSmpl(spml)
-  # co2 is removed
-
-Fml_pre <- MdlSmpl(spml)$model.reml
+Fml_pre <- MdlSmpl(Iml_pre)$model.reml
+Anova(Fml_pre)
+  # very merginal significant co2:time interaction
 
 # The final model is:
 Fml_pre$call
@@ -60,22 +53,20 @@ bxplts(value= "no", data= subsetD(extr, post))
   # log seems better
 
 # different random factor strucures
-m1 <- lme(log(no) ~ co2 * time, random = ~1|ring/plot, data = subsetD(extr, post))
-m2 <- lme(log(no) ~ co2 * time, random = ~1|ring, data = subsetD(extr, post))
-m3 <- lme(log(no) ~ co2 * time, random = ~1|id, data = subsetD(extr, post))
-anova(m1, m2, m3)
-  # m1 is better
+m1 <- lme(log(no) ~ co2 * time, random = ~1|block/ring/plot, data = subsetD(extr, post))
+RndmComp(m1)
+# m4 is better but just use m1 for the time being
 
 # autocorelation
-atcr.cmpr(m1, rndmFac="ring/plot")$models
-  # model 5 looks better
+atml <- atcr.cmpr(m1)
+atml$models
+# model 5 looks better
 
-Iml_post <- atcr.cmpr(m2, rndmFac="ring")[[5]]
+Iml_post <- atml[[5]]
 
 # The starting model is:
 Iml_post$call
 Anova(Iml_post)
-
 
 # model simplification
 MdlSmpl(Iml_post)
@@ -103,6 +94,11 @@ qqline(residuals.lm(Fml_post))
 ##########
 # Ancova #
 ##########
+
+##############
+## Raw data ##
+##############
+
 # Determine how many days to go back from the sampling dates to calculate soil
 # variables
 m1 <- LmrAicComp(ListDF = LstDF_SoilVar, 
@@ -134,7 +130,40 @@ plot(Iml_ancv)
 qqnorm(resid(Iml_ancv))
 qqline(resid(Iml_ancv))
 
+##############
+## % change ##
+##############
+df <- LstDF_SoilVar[[84]] # use 3-month mean as this is % change in 3 months
 
+## checkout for linearity against soil variables
+
+# plot against soil varriable
+scatterplotMatrix(~ I(log(no)) + Moist + Temp_Max + Temp_Mean + Temp_Min, diag = "boxplot", df)
+
+# plot for each plot against soil variables
+print(xyplot(log(no) ~ Moist | ring + plot, data = df, type = c("r", "p")))
+print(xyplot(log(no) ~ Temp_Mean | ring + plot, df, type = c("r", "p")))
+# looks fine
+
+## Analysis
+Iml_ancv_pc <- lmer(log(no) ~ co2 * (Moist + Temp_Mean) + (1|block) + (1|ring) + (1|id), data = df)
+
+Anova(Iml_ancv_pc)
+
+Fml_ancv_pc <- stepLmer(Iml_ancv_pc)
+Anova(Fml_ancv_pc)
+Anova(Fml_ancv_pc, test.statistic = "F")
+
+# main effect
+plot(allEffects(Fml_ancv_pc))
+
+plot(Fml_ancv_pc)
+qqnorm(resid(Fml_ancv_pc))
+qqline(resid(Fml_ancv_pc))
+
+# 95% CI for estimated parameters
+ciDF <- CIdf(Fml_ancv_pc)
+ciDF
 
 ## ----Stat_FACE_Extr_Nitrate_PreCO2Smmry
 # The starting model is:
