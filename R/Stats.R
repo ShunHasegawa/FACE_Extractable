@@ -1,9 +1,3 @@
-# parcent change
-pchDF <- ddply(extr, .(ring, plot, co2, block, id), PerChange)
-
-
-
-
 #########################################
 # Process soil variable data for ANCOVA #
 #########################################
@@ -28,12 +22,17 @@ TdrSoil <- subsetD(FACE_TDR_ProbeDF, Sample == "soil")
 # and merge with data. Then run this for different periods and store all the
 # resulted data frames in a sigle list
 
+# Actual values
 LstDF_SoilVar <- llply(seq(0, 90, 1), 
                        function(x) SoilVarPeriMean(data = postDF, period = x, SoilData = TdrSoil), 
                        .progress = "text")
 names(LstDF_SoilVar) <- seq(0, 90, 1)
 save(LstDF_SoilVar, file =  "Output/Data/LstDF_SoilVar.RData")
 load("Output/Data/LstDF_SoilVar.RData")
+
+# merge percent change
+lapply(LstDF_SoilVar, head)
+LstDF_SoilVar <- llply(LstDF_SoilVar, function(x) merge(x, ))
 
 ###########
 # Nitrate #
