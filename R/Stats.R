@@ -30,10 +30,6 @@ names(LstDF_SoilVar) <- seq(0, 90, 1)
 save(LstDF_SoilVar, file =  "Output/Data/LstDF_SoilVar.RData")
 load("Output/Data/LstDF_SoilVar.RData")
 
-# merge percent change
-lapply(LstDF_SoilVar, head)
-LstDF_SoilVar <- llply(LstDF_SoilVar, function(x) merge(x, ))
-
 ###########
 # Nitrate #
 ###########
