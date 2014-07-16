@@ -103,6 +103,10 @@ qqline(residuals.lm(Fml_post))
 # Ancova #
 ##########
 
+#############
+## Raw dta ##
+#############
+
 # Determine how many days to go back from the sampling dates to calculate soil
 # variables
 m1 <- LmrAicComp(ListDF = LstDF_SoilVar, 
@@ -135,6 +139,55 @@ plot(allEffects(Fml_ancv))
 plot(Fml_ancv)
 qqnorm(resid(Fml_ancv))
 qqline(resid(Fml_ancv))
+
+##############
+## % Change ##
+##############
+range(postDF$pcP)
+bxplts(value= "pcP", ofst = .6, data= postDF)
+# use poer(1/3)
+
+df <- LstDF_SoilVar[[84]] # use 3-month mean as this is % change in 3 months
+
+## checkout for linearity against soil variables
+
+# plot against soil varriable
+scatterplotMatrix(~ I(pcP^(1/3)) + Moist + Temp_Max + Temp_Mean + Temp_Min, diag = "boxplot", df)
+
+# plot for each plot against soil variables
+print(xyplot(pcP^(1/3) ~ Moist | ring + plot, data = df, type = c("r", "p")))
+print(xyplot(pcP^(1/3) ~ Temp_Mean | ring + plot, df, type = c("r", "p")))
+# looks fine
+
+## Analysis
+Iml_ancv_pc <- lmer(pcP^(1/3) ~ co2 * (Moist + Temp_Mean) + (1|block) + (1|ring) + (1|id), data = df)
+
+Anova(Iml_ancv_pc)
+
+# Fml_ancv_pc <- stepLmer(Iml_ancv_pc)
+# gives error message as random factors don't explain any variation
+m2 <- lmer(pcP^(1/3) ~ co2 + Moist + Temp_Mean + (1|block) + (1|ring) + (1|id), data = df)
+anova(Iml_ancv_pc, m2)
+Anova(m2)
+
+m3 <- lmer(pcP^(1/3) ~ Moist + Temp_Mean + (1|block) + (1|ring) + (1|id), data = df)
+m4 <- lmer(pcP^(1/3) ~ co2 + Temp_Mean + (1|block) + (1|ring) + (1|id), data = df)
+m5 <- lmer(pcP^(1/3) ~ Temp_Mean + (1|block) + (1|ring) + (1|id), data = df)
+anova(m2, m3)
+anova(m2, m4)
+anova(m2, m5)
+
+Fml_ancv_pc <- m5
+Anova(Fml_ancv_pc)
+Anova(Fml_ancv_pc, test.statistic = "F")
+
+# main effects
+plot(allEffects(Fml_ancv_pc))
+
+# model diagnosis
+plot(Fml_ancv_pc)
+qqnorm(resid(Fml_ancv_pc))
+qqline(resid(Fml_ancv_pc))
 
 ## ----Stat_FACE_Extr_Phosphate_PreCO2Smmry
 # The starting model is:
