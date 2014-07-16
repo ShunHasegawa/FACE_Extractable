@@ -199,6 +199,40 @@ Est.val <- rbind(
 
 Est.val
 
+##############
+## % change ##
+##############
+df <- LstDF_SoilVar[[84]] # use 3-month mean as this is % change in 3 months
+range(df$pcNH)
+bxplts(val = "pcNH", ofst = 1, data = df)
+# use log
+
+## checkout for linearity against soil variables
+
+# plot against soil varriable
+scatterplotMatrix(~ I(log(pcNH + 1)) + Moist + Temp_Max + Temp_Mean + Temp_Min, diag = "boxplot", df)
+# temp looks polynomical..
+
+# plot for each plot against soil variables
+print(xyplot(log(pcNH + 1) ~ Moist | ring + plot, data = df, type = c("r", "p")))
+print(xyplot(log(pcNH + 1) ~ Temp_Mean | ring + plot, df, type = c("r", "p")))
+
+## Analysis
+Iml_ancv_pc <- lmer(log(pcNH + 1) ~ co2 * (Moist + Temp_Mean) 
+                    + (1|block) + (1|ring) + (1|id), data = df)
+Anova(Iml_ancv_pc)
+Fml_ancv_pc <- stepLmer(Iml_ancv_pc)
+Anova(Fml_ancv_pc)
+Anova(Fml_ancv_pc, test.statistic = "F")
+plot(allEffects(Fml_ancv_pc))
+plot(Fml_ancv_pc)
+qqnorm(resid(Fml_ancv_pc))
+qqline(resid(Fml_ancv_pc))
+
+## 95 % CI
+ciDF <- CIdf(Fml_ancv_pc)
+ciDF
+
 ## ----Stat_FACE_Extr_Ammonium_PreCO2Smmry
 # The starting model is:
 Iml_pre$call
