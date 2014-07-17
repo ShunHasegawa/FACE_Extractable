@@ -1,5 +1,5 @@
 PackratFormat: 1.4
-PackratVersion: 0.3.0.106
+PackratVersion: 0.3.0.107
 RVersion: 3.1.1
 Repos: CRAN=http://cran.rstudio.com,
     CRANextra=http://www.stats.ox.ac.uk/pub/RWin
@@ -127,7 +127,7 @@ Requires: lattice, RColorBrewer
 Package: lme4
 Source: CRAN
 Version: 1.1-7
-Hash: 0804558314c0eaaf0619bc0845766e97
+Hash: 0c0115e8f00468d7dafd090f4dc63e6f
 Requires: lattice, MASS, Matrix, minqa, nlme, nloptr, Rcpp, RcppEigen
 
 Package: lmerTest
@@ -194,12 +194,12 @@ Hash: a498401502a627e2f0d330f7b782c459
 
 Package: packrat
 Source: github
-Version: 0.3.0.106
-Hash: bd96fdb0ee71a75b6dbc6faa36c11ea14238358b
+Version: 0.3.0.107
+Hash: 404e1e898dd7e02bbbefd11ad909e1968ffce58f
 GithubRepo: packrat
 GithubUsername: rstudio
 GithubRef: master
-GithubSha1: bd96fdb0ee71a75b6dbc6faa36c11ea14238358b
+GithubSha1: 404e1e898dd7e02bbbefd11ad909e1968ffce58f
 
 Package: pbkrtest
 Source: CRAN
