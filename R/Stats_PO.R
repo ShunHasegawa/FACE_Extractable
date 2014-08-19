@@ -179,7 +179,8 @@ anova(m2, m5)
 
 Fml_ancv_pc <- m5
 Anova(Fml_ancv_pc)
-Anova(Fml_ancv_pc, test.statistic = "F")
+AnvF_P <- Anova(Fml_ancv_pc, test.statistic = "F")
+AnvF_P
 
 # main effects
 plot(allEffects(Fml_ancv_pc))
@@ -188,6 +189,17 @@ plot(allEffects(Fml_ancv_pc))
 plot(Fml_ancv_pc)
 qqnorm(resid(Fml_ancv_pc))
 qqline(resid(Fml_ancv_pc))
+
+########################
+# Confidence intervals #
+########################
+# confidence interval for estimated parameters
+ciDF <- CIdf(model = Fml_ancv)
+Est.val <- ciDF
+Est.val
+
+# reshape Est.val and make a table
+Est_P <- ANCV_Tbl(Est.val)
 
 ## ----Stat_FACE_Extr_Phosphate_PreCO2Smmry
 # The starting model is:

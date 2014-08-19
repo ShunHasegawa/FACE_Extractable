@@ -502,3 +502,57 @@ PltSoilVar_Period <- function(data, lab){
   ggsavePP(file = paste("output/figs/FACE_Extractable_SoilVar", lab, sep = "_"), plot = p2, width = 6, height = 6)
 }
 
+########################################################
+# confidence interval for estimated parameters by lmer #
+########################################################
+CIdf <- function(model, method = "boot"){
+  CIs <- confint(model, method = method)
+  CIs <- CIs[-grep("sd|sigma", row.names(CIs)), ] 
+  # take out estimates for fixed factors
+  coefs <- summary(model)$coefficients
+  ciDF <- cbind(CIs, Estimate = coefs[, "Estimate"])
+  return(ciDF)
+}  
+
+#############################################
+# Reshape estimated value and creat a table #
+#############################################
+ANCV_Tbl <- function(df, digits = 2, nsmall = 2){
+  Est.val <- within(data.frame(df), {
+    pred <- row.names(Est.val)
+    co2 <- factor(ifelse(grepl("elev", pred), "elev", "amb"))
+    predictor <- factor(ifelse(grepl("Temp", pred), "Temp",
+                               ifelse(grepl("Moist", pred), "Moist", 
+                                      "co2")))
+  })
+  names(Est.val)[c(1,2)] <- c("bCI", "tCI") 
+  
+  Est.val.mlt <- melt(Est.val, id = c("co2", "pred", "predictor"))
+  Est.val.Cst <- cast(Est.val.mlt, predictor + co2~ variable)
+  # format disimal numbers for each predictor
+  formatDF <- ddply(Est.val.Cst, .(predictor), 
+                    function(x) format(x, digits = digits, nsmall = nsmall))
+  # concatenate CI and estimated values
+  formatDF$val <- apply(formatDF, 1, function(x) 
+    paste(x["Estimate"], "(", x["bCI"], ", ",x["tCI"], ")", sep = ""))
+  
+  tbl <- cast(formatDF, predictor ~ co2, value =  "val")
+  return(tbl)
+}
+
+#######################################
+# Excel sheet for Summary Stats table #
+#######################################
+
+CrSheetAnvTbl <- function(workbook, sheetName, smmaryLst){
+  sheet <- createSheet(workbook, sheetName = sheetName)
+  addDataFrame(data.frame("ANOVA_F"), sheet, col.names = FALSE, row.names = FALSE)
+  addDataFrame(smmaryLst[[sheetName]][[1]], sheet, showNA = FALSE, 
+               row.names = TRUE, characterNA="NA",
+               startRow = 2)
+  addDataFrame(data.frame("Coef"), sheet, 
+               col.names = FALSE, row.names = FALSE,
+               startRow = 10)
+  addDataFrame(smmaryLst[[sheetName]][[2]], sheet, showNA = FALSE, 
+               row.names = FALSE, characterNA="NA", startRow = 11)
+}

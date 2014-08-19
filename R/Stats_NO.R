@@ -117,18 +117,34 @@ scatterplotMatrix(~ log(no) + log(Moist) + Temp_Max + Temp_Mean + Temp_Min,
                   diag = "boxplot", df)
 
 # plot for each plot against soil variables
-print(xyplot(log(no) ~ log(Moist) | ring + plot, df, type = c("r", "p")))
-print(xyplot(log(no) ~ Temp_Mean | ring + plot, df, type = c("r", "p")))
+print(xyplot(log(no) ~ log(Moist) | ring + plot, m1$Data, type = c("r", "p")))
+print(xyplot(log(no) ~ Temp_Mean | ring + plot, m1$Data, type = c("r", "p")))
 # looks fine
 
 ## Analysis
-Iml_ancv <- lmer(log(no) ~ co2 * (log(Moist) + Temp_Mean) + 
-                   (1|block) + (1|ring) + (1|id), data = df)
+Iml_ancv <- m1$Initial
 Anova(Iml_ancv)
-plot(allEffects(Iml_ancv))
-plot(Iml_ancv)
-qqnorm(resid(Iml_ancv))
-qqline(resid(Iml_ancv))
+
+Fml_ancv <- m1$Final
+Anova(Fml_ancv)
+AnvF_no <- Anova(Fml_ancv, test.statistic = "F")
+AnvF_no
+
+plot(allEffects(Fml_ancv))
+plot(Fml_ancv)
+qqnorm(resid(Fml_ancv))
+qqline(resid(Fml_ancv))
+
+########################
+# Confidence intervals #
+########################
+# confidence interval for estimated parameters
+ciDF <- CIdf(model = Fml_ancv)
+Est.val <- ciDF
+Est.val
+
+# reshape Est.val and make a table
+Est_NO <- ANCV_Tbl(Est.val)
 
 ##############
 ## % change ##

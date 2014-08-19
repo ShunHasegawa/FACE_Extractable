@@ -44,3 +44,19 @@ source("R/Stats_NH.R")
 # Phosphate #
 #############
 source("R/Stats_PO.R")
+
+#######################
+# Summary Stats table #
+#######################
+# create summary list
+StatSmmryLst <- list("Nitrate" = list(AnvF_no, Est_NO),
+                     "Ammonium" = list(AnvF_nh, Est_nh),
+                     "Phosphate" = list(AnvF_P, Est_P))
+
+# save in a single excel file
+wb <- createWorkbook()
+l_ply(c("Nitrate", "Ammonium", "Phosphate"), 
+      function(x) CrSheetAnvTbl(workbook = wb, 
+                                sheetName = x, 
+                                smmaryLst = StatSmmryLst))
+saveWorkbook(wb, "Output//Table/FACE_Extractable_Ancv.xlsx")

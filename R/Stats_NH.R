@@ -178,6 +178,7 @@ m3 <- lmer(sqrt(nh) ~ co2 + Moist + Temp_Mean + (1|block) + (1|ring) + (1|id), d
 anova(m2, m3)
 Anova(m3)
 Anova(m3, test.statistic = "F")
+
 plot(m3)
 qqnorm(resid(m3))
 qqline(resid(m3))
@@ -185,6 +186,9 @@ plot(allEffects(m3))
 # This looks better so use this
 Iml_ancv <- m1
 Fml_ancv <- m3
+
+AnvF_nh <- Anova(Fml_ancv, test.statistic = "F")
+AnvF_nh
 
 # 95 % CI for each estimate
 ciDF <- CIdf(Fml_ancv)
@@ -198,6 +202,9 @@ Est.val <- rbind(
 )
 
 Est.val
+
+# reshape Est.val and make a table
+Est_nh <- ANCV_Tbl(Est.val)
 
 ##############
 ## % change ##
