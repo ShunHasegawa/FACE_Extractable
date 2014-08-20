@@ -24,9 +24,9 @@ l_ply(1:3, function(x) ggsavePP(filename = fls[x], plot = TrtFg[[x]], width = 6,
 ##################################
 # labels for facet_grid
 ylabs <- list(
-  'no' = expression(NO[3]^"-"-N),
-  'nh' = expression(NH[4]^"+"-N),
-  'po' = expression(PO[4]^"3-"-P))
+  'no' = expression(KCl-extractable~NO[3]^"-"),
+  'nh' = expression(KCl-extractable~NH[4]^"+"),
+  'po' = expression(Bray-extractable~PO[4]^"3-"))
 
 
 ylab_label <- function(variable, value){
@@ -36,6 +36,16 @@ ylab_label <- function(variable, value){
 pl <- PltCO2Mean(TrtMean) +
   facet_grid(variable~., scales= "free_y", labeller= ylab_label)
 ggsavePP(filename = "output//figs/FACE_IEM_CO2Trt", plot = pl, width = 6, height = 6)
+
+########################
+# Plot for publication #
+########################
+# theme
+p <- WBFig(data = TrtMean, 
+           ylab = expression(Soil~nutrients~(mg~kg^"-1")),
+           facetLab = ylab_label)
+ggsavePP(filename = "Output//Figs/FACE_Manuscript/FACE_Extractable", plot = p, width = 6, height = 6)
+
 
 #######################
 # Plot soil variables #
