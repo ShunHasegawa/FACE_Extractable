@@ -143,6 +143,15 @@ science_theme <- theme(panel.grid.major = element_line(size = 0.2, color = "grey
 
 # white-black figure
 WBFig <- function(data, ylab, facetLab = ylab_label, figTheme = science_theme){
+  
+  # df for sub labels
+  subLabDF <- with(data, 
+                   data.frame(xv = as.Date("2012-6-15"),
+                              ddply(data, .(variable), summarise, yv = max(Mean + SE)),
+                              labels = LETTERS[1:length(levels(variable))],
+                              co2 = "amb"))
+    # co2 is required as group = co2 is used in the main plot mapping
+  
   p <- ggplot(data, aes(x = date, y = Mean, group = co2))
   
   p2 <- p + geom_line(aes(linetype = co2)) + 
@@ -155,12 +164,16 @@ WBFig <- function(data, ylab, facetLab = ylab_label, figTheme = science_theme){
                linetype = "dashed", col = "black") +
     scale_x_date(breaks= date_breaks("2 month"),
                  labels = date_format("%b-%y"),
-                 limits = as.Date(c("2012-7-1", "2014-4-2"))) +
+                 limits = as.Date(c("2012-6-15", "2014-4-2"))) +
     scale_shape_manual(values = c(24, 21), labels = c("Ambient", expression(eCO[2]))) +
     scale_fill_manual(values = c("black", "white"), 
                       labels = c("Ambient", expression(eCO[2]))) +
     scale_linetype_manual(values = c("solid", "dashed"), 
                           labels = c("Ambient", expression(eCO[2]))) +
+    geom_text(aes(x = xv, y = yv * .95, label = labels),
+              fontface = "bold",
+              hjust = 1,
+              data = subLabDF) +
     facet_grid(variable~., scales= "free_y", labeller= facetLab) +
     figTheme
   return(p2)
