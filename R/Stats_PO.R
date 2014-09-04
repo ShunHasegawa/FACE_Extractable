@@ -129,6 +129,12 @@ print(xyplot(log(po) ~ Temp_Mean | ring + plot, m1$Data, type = c("r", "p")))
 
 ## Analysis
 Iml_ancv <- m1$Initial
+# in summary Iml_ancv, it says "some computational error has occurred in 
+# lmerTest". There we can't use stepLmer so rewrite lmer for this model manually
+# this time till I find a solution. Might be partly becuse data is given within
+# the function.
+Iml_ancv <- lmer(log(po) ~ co2 * (log(Moist) + Temp_Mean) 
+            + (1 | block) + (1 |ring) + (1 | id), data = m1$Data)
 Fml_ancv <- stepLmer(Iml_ancv)
 Anova(Fml_ancv)
 AnvF_po <- Anova(Fml_ancv, test.statistic = "F")
@@ -154,11 +160,10 @@ Est_P <- ANCV_Tbl(Est.val)
 ##############
 ## % Change ##
 ##############
-range(postDF$pcP)
-bxplts(value= "pcP", ofst = .6, data= postDF)
-# use poer(1/3)
-
 df <- LstDF_SoilVar[[84]] # use 3-month mean as this is % change in 3 months
+range(df$pcP)
+bxplts(value= "pcP", ofst = .6, data= df)
+# use poer(1/3)
 
 ## checkout for linearity against soil variables
 
