@@ -108,7 +108,7 @@ aicDF <- m1$AICdf
 aicDF[which(aicDF$AICs == min(aicDF$AICs)), ]
 # 89 days gives the lowest AIC, not sure if it makes sense but use this for time
 # being
-df <- LstDF_SoilVar[[which(aicDF$AICs == min(aicDF$AICs))]]
+df <- m1$Data
 
 ## check linearity agains soil variables
 
@@ -125,7 +125,7 @@ print(xyplot(log(no) ~ Temp_Mean | ring + plot, m1$Data, type = c("r", "p")))
 Iml_ancv <- m1$Initial
 Anova(Iml_ancv)
 
-Fml_ancv <- m1$Final
+Fml_ancv <- stepLmer(Iml_ancv)
 Anova(Fml_ancv)
 AnvF_no <- Anova(Fml_ancv, test.statistic = "F")
 AnvF_no
@@ -181,6 +181,10 @@ qqline(resid(Fml_ancv_pc))
 ciDF <- CIdf(Fml_ancv_pc)
 ciDF
 
+###########
+# Summary #
+###########
+
 ## ----Stat_FACE_Extr_Nitrate_PreCO2Smmry
 # The starting model is:
 Iml_pre$call
@@ -200,5 +204,19 @@ Fml_post$call
 Anova(Fml_post)
 
 ## ---- Stat_FACE_Extr_Nitrate_postCO2_withSoilVarSmmry
-Iml_ancv$call
+
+# The initial model is:
+Iml_ancv@call
 Anova(Iml_ancv)
+
+# The final model is:
+Fml_ancv@call
+
+# Chisq
+Anova(Fml_ancv)
+
+# F-test
+AnvF_no
+
+# 95% CI for estimated parameter
+Est_NO
