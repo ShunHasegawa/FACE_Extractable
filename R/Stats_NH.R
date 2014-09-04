@@ -117,20 +117,15 @@ qqline(residuals.lm(Fml_post))
 # Determine how many days to go back from the sampling dates to calculate soil
 # variables
 
-# m1 <- LmrAicComp(ListDF = LstDF_SoilVar, 
-#                  formula = formula(sqrt(nh) ~ co2 * (log(Moist) + Temp_Mean) + 
-#                                      (1|block) + (1|ring) + (1|id)))
+m1 <- LmrAicComp(ListDF = LstDF_SoilVar, 
+                 formula = formula(sqrt(nh) ~ co2 * (log(Moist) + Temp_Mean) + 
+                                     (1|block) + (1|ring) + (1|id)))
 
-# The above code return erorr message as random factors don't explain any 
-# variation. Redo manually
-
-ListLmr <- llply(LstDF_SoilVar, function(x) lmer(sqrt(nh) ~ co2 * (Moist + Temp_Mean) + 
-                                                   (1|block) + (1|ring) + (1|id), data = x))
-aicDF <- ldply(ListLmr, AIC)
-aicDF[which(aicDF$V1 == min(aicDF$V1)),]
+aicDF <- m1$AICdf
+aicDF[which(aicDF$AICs == min(aicDF$AICs)), ]
 # 69 days gives the lowest AIC
 
-df <- LstDF_SoilVar[[which(aicDF$V1 == min(aicDF$V1))]]
+df <- m1$Data
 
 ## check the linearlity against soil variables
 
@@ -280,9 +275,14 @@ Anova(Iml_ancv)
 
 # Final model
 Fml_ancv@call
+
+# Chisq
 Anova(Fml_ancv)
 
+# F-test
+AnvF_nh
+
 # 95 % CI
-Est.val
+Est_nh
 
 

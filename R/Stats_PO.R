@@ -129,8 +129,10 @@ print(xyplot(log(po) ~ Temp_Mean | ring + plot, m1$Data, type = c("r", "p")))
 
 ## Analysis
 Iml_ancv <- m1$Initial
-Fml_ancv <- m1$Final
+Fml_ancv <- stepLmer(Iml_ancv)
 Anova(Fml_ancv)
+AnvF_po <- Anova(Fml_ancv, test.statistic = "F")
+AnvF_po
 
 # main effects
 plot(allEffects(Fml_ancv))
@@ -139,6 +141,15 @@ plot(allEffects(Fml_ancv))
 plot(Fml_ancv)
 qqnorm(resid(Fml_ancv))
 qqline(resid(Fml_ancv))
+
+## Confidence intervals
+# confidence interval for estimated parameters
+ciDF <- CIdf(model = Fml_ancv)
+Est.val <- ciDF
+Est.val
+
+# reshape Est.val and make a table
+Est_P <- ANCV_Tbl(Est.val)
 
 ##############
 ## % Change ##
@@ -179,8 +190,7 @@ anova(m2, m5)
 
 Fml_ancv_pc <- m5
 Anova(Fml_ancv_pc)
-AnvF_P <- Anova(Fml_ancv_pc, test.statistic = "F")
-AnvF_P
+Anova(Fml_ancv_pc, test.statistic = "F")
 
 # main effects
 plot(allEffects(Fml_ancv_pc))
@@ -190,16 +200,14 @@ plot(Fml_ancv_pc)
 qqnorm(resid(Fml_ancv_pc))
 qqline(resid(Fml_ancv_pc))
 
-########################
-# Confidence intervals #
-########################
+## Confidence intervals ##
 # confidence interval for estimated parameters
-ciDF <- CIdf(model = Fml_ancv)
+ciDF <- CIdf(model = Fml_ancv_pc)
 Est.val <- ciDF
 Est.val
 
 # reshape Est.val and make a table
-Est_P <- ANCV_Tbl(Est.val)
+Est_pcP <- ANCV_Tbl(Est.val)
 
 ## ----Stat_FACE_Extr_Phosphate_PreCO2Smmry
 # The starting model is:
@@ -229,6 +237,12 @@ Anova(Iml_ancv)
 
 # The final model is
 Fml_ancv@call
-Anova(Fml_ancv)
-Anova(Fml_ancv, test.statistic = "F")
 
+# Chisq
+Anova(Fml_ancv)
+
+# F-test
+AnvF_po
+
+# 95 % CI
+Est_P
