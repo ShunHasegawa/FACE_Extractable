@@ -5,6 +5,27 @@
 %% need to be loaded here if one wants to compile this child document to PDF %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+<<setup, include=FALSE>>=
+opts_chunk$set(concordance = TRUE, warning = FALSE, tidy = TRUE, tidy.opts = list(width.cutoff = 60))
+opts_knit$set(root.dir=normalizePath('../'))
+@
+
+
+<<readFiles, include=FALSE>>=
+.libPaths("packrat/lib/x86_64-w64-mingw32//3.1.1") 
+# path to packrat library. knitr use local drive library as default
+
+source("R/pckg.R")
+source("R//functions.R")
+load("Output/Data/extractable.RData")
+source("R//SummaryExlTable.R")
+source("R//Figs.R")
+load("Data/FACE_TDR_ProbeDF.RData")
+TdrSoil <- subsetD(FACE_TDR_ProbeDF, Sample == "soil")
+load("Output/Data/LstDF_SoilVar.RData")
+@
+
+
 \subsection{Phosphate}
 
 %%% CO2 trt %%%
