@@ -84,7 +84,18 @@ summary(Fml_post)
 
 # plot(allEffects(Fml_post))
 
-# contrast
+############
+# contrast #
+############
+
+# the current will get error message for the contrast test saying Non-positive
+# definite approximate variance-covariance. so relvel fixed factor and rerun.
+newDF <- subsetD(extr, post)
+newDF$co2 <- relevel(newDF$co2, "elev")
+
+Fml_post <- lme(sqrt(nh) ~ co2 * time, random = ~1|block/ring/plot, 
+                 data = newDF)
+
 cntrst<- contrast(Fml_post, 
                   a = list(time = levels(extr$time[extr$post, drop = TRUE]), co2 = "amb"),
                   b = list(time = levels(extr$time[extr$post, drop = TRUE]), co2 = "elev"))
