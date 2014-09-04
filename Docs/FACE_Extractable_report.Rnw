@@ -17,29 +17,17 @@ opts_knit$set(root.dir=normalizePath('../'))
 
 
 <<readFiles, include=FALSE>>=
-rm(list=ls(all=TRUE))
+.libPaths("packrat/lib/x86_64-w64-mingw32//3.1.1") 
+# path to packrat library. knitr use local drive library as default
 
-library(car)
-library(gmodels)
-library(lme4)
-library(lubridate)
-library(MASS)
-library(nlme)
-library(packrat)
-library(plyr)
-library(reshape)
-library(xlsx)
-library(contrast)
-library(effects)
-library(ggplot2)
-library(scales)
-library(xtable)
-library(visreg)
-
+source("R/pckg.R")
 source("R//functions.R")
 load("Output/Data/extractable.RData")
 source("R//SummaryExlTable.R")
 source("R//Figs.R")
+load("Data/FACE_TDR_ProbeDF.RData")
+TdrSoil <- subsetD(FACE_TDR_ProbeDF, Sample == "soil")
+load("Output/Data/LstDF_SoilVar.RData")
 @
 
 \maketitle
