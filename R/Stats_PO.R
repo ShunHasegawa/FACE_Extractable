@@ -52,50 +52,39 @@ qqline(residuals.lm(Fml_pre))
 bxplts(value= "po", data= subsetD(extr, post))
   # log seems better
 
-# different random factor strucures
-m1 <- lme(log(po) ~ co2 * time, random = ~1|block/ring/plot, data = subsetD(extr, post))
-RndmComp(m1)$anova
-# m3 is better, but use m1 for time being
-
-# autocorelation
-atml <- atcr.cmpr(m1)
-atml$models
-  # no need of autocorrelation
-
-Iml_post <- atml[[1]]
-
-# The starting model is:
-Iml_post$call
+# The initial model
+Iml_post <- lmer(log(po) ~ co2 * time + (1|block)+ (1|ring) + (1|id), 
+                 data = subsetD(extr, post))
 Anova(Iml_post)
+Anova(Iml_post, test.statistic = "F")
+# no need to remove anything
 
-# model simplification
-MdlSmpl(Iml_post)
-  #no factor is removed
-
-Fml_post <- MdlSmpl(Iml_post)$model.reml
-
-# The final model is:
-Fml_post$call
-
+# Model simplification
+Fml_post <- Iml_post
 Anova(Fml_post)
+AnvF_P_post <- Anova(Fml_post, test.statistic = "F") 
+AnvF_P_post
 
 summary(Fml_post)
 
 # plot(allEffects(Fml_post))
 
+# model diagnosis
+plot(Fml_post)
+qqnorm(residuals(Fml_post))
+qqline(residuals(Fml_post))
+
 # contrast
-cntrst<- contrast(Fml_post, 
+# Note that contrast doesn't work with lmer so use lme
+LmeMod <- lme(log(po) ~ co2 * time, random = ~1|block/ring/plot, 
+              data = subsetD(extr, post))
+
+cntrst<- contrast(LmeMod, 
                   a = list(time = levels(extr$time[extr$post, drop = TRUE]), co2 = "amb"),
                   b = list(time = levels(extr$time[extr$post, drop = TRUE]), co2 = "elev"))
 FACE_Extr_PostCO2_PO_CntrstDf <- cntrstTbl(cntrst, data = extr[extr$post, ], digit = 2)
 
 FACE_Extr_PostCO2_PO_CntrstDf
-
-# model diagnosis
-plot(Fml_post)
-qqnorm(Fml_post, ~ resid(.)|id)
-qqnorm(residuals.lm(Fml_post))
-qqline(residuals.lm(Fml_post))
 
 ## ---- Stat_FACE_Extr_Phosphate_postCO2_withSoilVar
 
@@ -225,12 +214,17 @@ Anova(Fml_pre)
 
 ## ----Stat_FACE_Extr_Phosphate_PostCO2Smmry
 # The starting model is:
-Iml_post$call
+Iml_post@call
 Anova(Iml_post)
 
 # The final model is:
-Fml_post$call
+Fml_post@call
+
+# Chi-square
 Anova(Fml_post)
+
+# F-test
+AnvF_P_post
 
 # contrast
 FACE_Extr_PostCO2_PO_CntrstDf

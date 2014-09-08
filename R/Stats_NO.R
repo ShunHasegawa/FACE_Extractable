@@ -52,32 +52,16 @@ qqline(residuals.lm(Fml_pre))
 bxplts(value= "no", data= subsetD(extr, post))
   # log seems better
 
-# different random factor strucures
-m1 <- lme(log(no) ~ co2 * time, random = ~1|block/ring/plot, data = subsetD(extr, post))
-RndmComp(m1)
-# m4 is better but just use m1 for the time being
-
-# autocorelation
-atml <- atcr.cmpr(m1)
-atml$models
-# model 5 looks better
-
-Iml_post <- atml[[5]]
-
-# The starting model is:
-Iml_post$call
+# The initial model
+Iml_post <- lmer(log(no) ~ co2 * time + (1|block)+ (1|ring) + (1|id), 
+                 data = subsetD(extr, post))
 Anova(Iml_post)
 
-# model simplification
-MdlSmpl(Iml_post)
-  # co2xtime, co2 are removed
-
-Fml_post <- MdlSmpl(Iml_post)$model.reml
-
-# The final model is:
-Fml_post$call
-
+# Model simplification
+Fml_post <- stepLmer(Iml_post)
 Anova(Fml_post)
+AnvF_NO_post <- Anova(Fml_post, test.statistic = "F") 
+AnvF_NO_post
 
 summary(Fml_post)
 
@@ -85,9 +69,8 @@ summary(Fml_post)
 
 # model diagnosis
 plot(Fml_post)
-qqnorm(Fml_post, ~ resid(.)|id)
-qqnorm(residuals.lm(Fml_post))
-qqline(residuals.lm(Fml_post))
+qqnorm(residuals(Fml_post))
+qqline(residuals(Fml_post))
   #not great
 
 ## ---- Stat_FACE_Extr_Nitrate_postCO2_withSoilVar
@@ -200,8 +183,13 @@ Iml_post$call
 Anova(Iml_post)
 
 # The final model is:
-Fml_post$call
+Fml_post@call
+
+# Chi-square
 Anova(Fml_post)
+
+# F test
+AnvF_NO_post
 
 ## ---- Stat_FACE_Extr_Nitrate_postCO2_withSoilVarSmmry
 

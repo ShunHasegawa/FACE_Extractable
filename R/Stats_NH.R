@@ -52,63 +52,50 @@ qqline(residuals.lm(Fml_pre))
 bxplts(value= "nh", data= subsetD(extr, post))
   # sqrt seems better
 
-# different random factor strucures
-m1 <- lme(sqrt(nh) ~ co2 * time, random = ~1|block/ring/plot, data = subsetD(extr, post))
-RndmComp(m1)$anova
-  # m5 is better but use m1 for the time being
-
-# autocorelation
-atml <- atcr.cmpr(m1)
-atml$models
-anova(atml[[1]], atml[[5]])
-  # model5 is better, but no significant difference so use m1
-
-Iml_post <- atml[[1]]
-
-# The starting model is:
-Iml_post$call
+# The initial model
+Iml_post <- lmer(sqrt(nh) ~ co2 * time + (1|block)+ (1|ring) + (1|id), 
+                 data = subsetD(extr, post))
 Anova(Iml_post)
+Anova(Iml_post, test.statistic = "F")
+  # no need to remove anything
 
-# model simplification
-MdlSmpl(Iml_post)
- #no factor is removed
-
-Fml_post <- MdlSmpl(Iml_post)$model.reml
-
-# The final model is:
-Fml_post$call
-
+# Model simplification
+Fml_post <- Iml_post
 Anova(Fml_post)
+AnvF_NH_post <- Anova(Fml_post, test.statistic = "F") 
+AnvF_NH_post
 
 summary(Fml_post)
 
 # plot(allEffects(Fml_post))
 
+# model diagnosis
+plot(Fml_post)
+qqnorm(residuals(Fml_post))
+qqline(residuals(Fml_post))
+  # not great
+
 ############
 # contrast #
 ############
+# Note that contrast doesn't work with lmer so use lme
 
-# the current will get error message for the contrast test saying Non-positive
+# LmeMod <- lme(sqrt(nh) ~ co2 * time, random = ~1|block/ring/plot, data =
+# subsetD(extr, post))
+
+# This will give you error message for the contrast test saying Non-positive
 # definite approximate variance-covariance. so relvel fixed factor and rerun.
 newDF <- subsetD(extr, post)
 newDF$co2 <- relevel(newDF$co2, "elev")
 
-Fml_post <- lme(sqrt(nh) ~ co2 * time, random = ~1|block/ring/plot, 
-                 data = newDF)
+LmeMod <- lme(sqrt(nh) ~ co2 * time, random = ~1|block/ring/plot, data = newDF)
 
-cntrst<- contrast(Fml_post, 
+cntrst<- contrast(LmerMod, 
                   a = list(time = levels(extr$time[extr$post, drop = TRUE]), co2 = "amb"),
                   b = list(time = levels(extr$time[extr$post, drop = TRUE]), co2 = "elev"))
 FACE_Extr_PostCO2_NH_CntrstDf <- cntrstTbl(cntrst, data = extr[extr$post, ], digit = 2)
 
 FACE_Extr_PostCO2_NH_CntrstDf
-
-# model diagnosis
-plot(Fml_post)
-# wedge-shaped
-qqnorm(Fml_post, ~ resid(.)|id)
-qqnorm(residuals.lm(Fml_post))
-qqline(residuals.lm(Fml_post))
 
 ## ---- Stat_FACE_Extr_Ammonium_postCO2_withSoilVar
 ##########
@@ -257,12 +244,17 @@ Anova(Fml_pre)
 
 ## ----Stat_FACE_Extr_Ammonium_PostCO2Smmry
 # The starting model is:
-Iml_post$call
+Iml_post@call
 Anova(Iml_post)
 
 # The final model is:
-Fml_post$call
+Fml_post@call
+
+# Chi-square
 Anova(Fml_post)
+
+# F-test
+AnvF_NH_post
 
 #  Contrast
 FACE_Extr_PostCO2_NH_CntrstDf
