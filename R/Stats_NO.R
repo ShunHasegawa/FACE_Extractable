@@ -179,7 +179,7 @@ Anova(Fml_pre)
 
 ## ----Stat_FACE_Extr_Nitrate_PostCO2Smmry
 # The starting model is:
-Iml_post$call
+Iml_post@call
 Anova(Iml_post)
 
 # The final model is:
