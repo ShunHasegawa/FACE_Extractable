@@ -136,7 +136,8 @@ PltCO2Mean <- function(data){
 # Fig for publication #
 #######################
 # define graphic background
-science_theme <- theme(panel.grid.major = element_line(size = 0.2, color = "grey"), 
+science_theme <- theme(panel.grid.major = element_blank(),
+                       panel.grid.minor = element_blank(),
                        axis.text.x  = element_text(angle=45, vjust= 1, hjust = 1),
                        legend.position = c(.89, .93), 
                        legend.title = element_blank())
