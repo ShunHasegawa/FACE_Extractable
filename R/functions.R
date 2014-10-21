@@ -604,3 +604,8 @@ CrSheetAnvTbl <- function(workbook, sheetName, smmaryLst){
   addDataFrame(smmaryLst[[sheetName]][[2]], sheet, showNA = FALSE, 
                row.names = FALSE, characterNA="NA", startRow = 11)
 }
+
+###################################
+# Compute square R value for GLMM #
+###################################
+source("R/rsquaredglmm.R")
