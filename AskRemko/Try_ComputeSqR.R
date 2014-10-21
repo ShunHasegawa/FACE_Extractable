@@ -1,4 +1,6 @@
 require(plyr)
+require(lme4)
+
 source("rsquaredglmm.R")
 load("ListDF.RData") # load list of data frames
 
