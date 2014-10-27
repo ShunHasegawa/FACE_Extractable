@@ -98,9 +98,29 @@ FACE_Extr_PostCO2_PO_CntrstDf
 
 # Determine how many days to go back from the sampling dates to calculate soil
 # variables
-m1 <- LmrAicComp(ListDF = LstDF_SoilVar, 
-                 formula = formula(log(po) ~ co2 * (log(Moist) + Temp_Mean) + 
-                                       (1|block) + (1|ring) + (1|id)))
+
+# list of lmers given from each data frames
+Lstlmr <- llply(LstDF_SoilVar, function(x) lmer(log(po) ~ co2 * (log(Moist) + Temp_Mean) + 
+                  (1|block) + (1|ring) + (1|id), data = x),
+                .progress = "text"
+                )
+
+# compute and plot r2 and aic
+l <- list()
+for(i in 1:length(Lstlmr)){
+  x <- LstDF_SoilVar[[i]]
+  l[[i]] <- r.squared(Lstlmr[[i]])
+}
+r2DF <- rbind.fill(l)
+r2DF$period <- as.numeric(names(LstDF_SoilVar))
+r2DF_mlt <- melt(r2DF, id = names(r2DF)[c(-4, -6)])
+p <- ggplot(data = r2DF_mlt, aes(x = period, y = value))
+p + geom_point() + facet_grid(variable ~ ., scale = "free_y")
+
+
+
+head(r2DF_mlt)
+?facet_wrap
 m1$AICdf
 # 90 days showed the lowest AIC... but not sure if it makes sense but the result
 # would be the same when you use 30 days anyway

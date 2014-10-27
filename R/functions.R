@@ -412,6 +412,78 @@ LmrAicComp <- function(ListDF, formula){
   return(list("Initial" = Iml, "Data" = df, "AICdf" = aicDF))
 }
 
+
+LmrAicComp2 <- function(ListDF, formula){
+  # lmer test for each data set
+  LstLmrs <- llply(ListDF, 
+                   function(x) {
+                     f <- formula
+                     environment(f) <- environment()
+                     lmer(f, data = x)},
+                   .progress = "text")
+  names(LstLmrs) <- names(ListDF)
+  
+  # plot AIC and R2
+  aic_R_DF <- ldply(LstLmrs, function(x) cbind(AIC(x), r.squared(x)))
+#   
+#   plot(AICs ~ period, data = aicDF, xlab = "N of Days back from sampling")
+#   
+#   
+#   # lmer for the lowest aic
+#   df <- ListDF[[which(aicDF$AICs == min(aicDF$AICs))]]
+#   Iml <- lmer(formula, data = df)
+#   return(list("Initial" = Iml, "Data" = df, "AICdf" = aicDF))
+  return(aic_R_Df)
+}
+
+RunLmr <- function(ListDF, form){
+  # lmer test for each data set
+  LstLmrs <- llply(ListDF, 
+                   function(x) lmer(form, data = x),
+                   .progress = "text")
+  
+  # compute square r
+#   df <- ldply(c(1:length((LstLmrs))), function(y){
+#     x <- ListDF[[y]]
+#     r.squared(LstLmrs[[y]])
+#   })
+#   l <- list()
+#   for(i in 1:length(LstLmrs)){
+#     x <- ListDF[[i]]
+#     l[[i]] <- r.squared(LstLmrs[[i]])
+#   }
+#   df <- rbind.fill(l)
+  return(LstLmrs)
+}
+
+
+l <- list()
+for(i in 1:length(lmrs)){
+  x <- LstDF_SoilVar[[i]]
+  l[[i]] <- r.squared(lmrs[[i]])
+}
+df <- rbind.fill(l)
+
+
+
+
+rm(LstLmrs)
+formula
+
+
+
+
+ld <- ldply(c(1:length((LstLmrs))), function(y){
+  x <- LstDF_SoilVar[[y]]
+  r.squared(LstLmrs[[y]])
+})
+
+
+
+
+
+
+ld
 #########################
 # plot predicted values #
 #########################
