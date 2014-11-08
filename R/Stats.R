@@ -48,6 +48,11 @@ source("R/Stats_PO.R")
 #######################
 # Summary Stats table #
 #######################
+
+########################
+## CO2 x Moist x Temp ##
+########################
+
 # create summary list
 StatSmmryLst <- list("Nitrate" = list(AnvF_no, Est_NO),
                      "Ammonium" = list(AnvF_nh, Est_nh),
@@ -60,3 +65,15 @@ l_ply(c("Nitrate", "Ammonium", "Phosphate"),
                                 sheetName = x, 
                                 smmaryLst = StatSmmryLst))
 saveWorkbook(wb, "Output//Table/FACE_Extractable_Ancv.xlsx")
+
+################
+## CO2 x Time ##
+################
+# create stat summary table for LMM with CO2 and time
+CO2TimeStatList <- list('no' = AnvF_NO_post, 
+                        'nh' = AnvF_NH_post, 
+                        'p' = AnvF_P_post) 
+
+Stat_CO2Time <- ldply(names(CO2TimeStatList), 
+                      function(x) StatTable(CO2TimeStatList[[x]], variable = x))
+save(Stat_CO2Time, file = "Output//Data/FACE_extractable_CO2xTime_Stats.RData")
