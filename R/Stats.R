@@ -72,7 +72,7 @@ saveWorkbook(wb, "Output//Table/FACE_Extractable_Ancv.xlsx")
 # create stat summary table for LMM with CO2 and time
 CO2TimeStatList <- list('no' = AnvF_NO_post, 
                         'nh' = AnvF_NH_post, 
-                        'p' = AnvF_P_post) 
+                        'po' = AnvF_P_post) 
 
 Stat_CO2Time <- ldply(names(CO2TimeStatList), 
                       function(x) StatTable(CO2TimeStatList[[x]], variable = x))
