@@ -41,11 +41,21 @@ ggsavePP(filename = "output//figs/FACE_IEM_CO2Trt", plot = pl, width = 6, height
 ########################
 # Plot for publication #
 ########################
-# theme
+# load stat table, note that if you want the most updated one, you need to run
+# Stat.R first
+load("output//data//FACE_extractable_CO2xTime_Stats.RData")
+
+# ymax value for each variable
+ymaxDF <- ddply(TrtMean, .(variable), function(x) max(x$Mean + x$SE, na.rm = TRUE))
+
+# create a plot
 p <- WBFig(data = TrtMean, 
            ylab = expression(Soil~nutrients~(mg~kg^"-1")),
-           facetLab = ylab_label)
-ggsavePP(filename = "Output//Figs/FACE_Manuscript/FACE_Extractable", plot = p, width = 6, height = 6)
+           facetLab = ylab_label,
+           StatRes = Stat_CO2Time, 
+           StatY = c(ymaxDF[1, 2] + .3, ymaxDF[2:3, 2]))
+ggsavePP(filename = "Output//Figs/FACE_Manuscript/FACE_Extractable", plot = p, 
+         width = 6, height = 6)
 
 
 #######################
