@@ -139,12 +139,14 @@ PltCO2Mean <- function(data){
 science_theme <- theme(panel.grid.major = element_blank(),
                        panel.grid.minor = element_blank(),
                        axis.text.x  = element_text(angle=45, vjust= 1, hjust = 1),
-                       legend.position = c(.89, .93), 
+                       legend.position = c(.4, .93), 
                        legend.title = element_blank())
 
 # white-black figure
-WBFig <- function(data, ylab, facetLab = ylab_label, figTheme = science_theme){
-  
+WBFig <- function(data, ylab, facetLab = ylab_label, figTheme = science_theme,
+                  StatRes, StatY){
+  # StatRes is stats tables to put on the figs; StatY is y coordinate for that tables
+    
   # df for sub labels
   subLabDF <- with(data, 
                    data.frame(xv = as.Date("2012-6-15"),
@@ -153,6 +155,22 @@ WBFig <- function(data, ylab, facetLab = ylab_label, figTheme = science_theme){
                               co2 = "amb"))
     # co2 is required as group = co2 is used in the main plot mapping
   
+  # df for stat table
+  ## compute ylength for each variable
+  ylengthDF <- ddply(data, 
+                  .(variable), 
+                  function(x) 
+                    data.frame(ylength = max(x$Mean +x$SE, na.rm = TRUE) -
+                                 min(x$Mean - x$SE, na.rm = TRUE)))
+    # ylength is given as the difference between max and min
+  
+  ## create df
+  statDF <- StatPositionDF(StatRes = StatRes, 
+                           variable = levels(ylengthDF$variable), 
+                           ytop = StatY,
+                           ylength = ylengthDF$ylength)
+    
+  # create a plot
   p <- ggplot(data, aes(x = date, y = Mean, group = co2))
   
   p2 <- p + geom_line(aes(linetype = co2)) + 
@@ -176,7 +194,15 @@ WBFig <- function(data, ylab, facetLab = ylab_label, figTheme = science_theme){
               hjust = 1,
               data = subLabDF) +
     facet_grid(variable~., scales= "free_y", labeller= facetLab) +
-    figTheme
+    figTheme +
+    geom_text(data = subset(statDF, predictor != ""), 
+              aes(x = as.Date("2014-1-20"), y = yval, label = predictor),
+              size = 2, hjust = 1, parse = TRUE) +
+    # unless remove [" "] with predictor != "", labels will be messed up due to
+    # this empty level
+    geom_text(data = statDF, 
+              aes(x = as.Date("2014-2-20"), y = yval, label = p), 
+              size = 2, parse = TRUE)
   return(p2)
 }
 
@@ -661,16 +687,17 @@ StatTable <- function(x, variable) { # x is anova result
 ############################################
 # Create df to add a stat table to figures #
 ############################################
-StatPositionDF <- function(StatRes, variable, ytop, ymax, gap = .07){
-  d <- data.frame(variable, ytop, gap = gap * ymax) 
+StatPositionDF <- function(StatRes, variable, ytop, ylength, gap = .07){
+  d <- data.frame(variable, ytop, gap = gap * ylength) 
   # ytop is y coordinate for the top (i.e. CO2) of the table for each fig 
-  # (variable), ymax is the maximum value of the plot (i.e. max(mean+SE)).  
-  # 0.1 * ymax is used to determine the gap between each row of the table
+  # (variable), ylength is the difference of max and min value of the plot (i.e.
+  # max(mean+SE) - min(mean-SE)). 0.1 * ylength is used to determine the gap between each row
+  # of the table
   
   predictor <- levels(StatRes$predictor)
   
   # create df which contains variable, predictor and y coordinates for the other
-  # predictors (i.e. Time, CO2xTime) which is ymax*0.1 (= gap) lower than one above
+  # predictors (i.e. Time, CO2xTime) which is ylength*0.1 (= gap) lower than one above
   d2 <- ddply(d, .(variable),
               function(x){
                 data.frame(predictor, 
