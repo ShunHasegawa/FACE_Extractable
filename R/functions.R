@@ -609,3 +609,77 @@ CrSheetAnvTbl <- function(workbook, sheetName, smmaryLst){
 # Compute square R value for GLMM #
 ###################################
 source("R/rsquaredglmm.R")
+
+################################
+# Return star based on P value #
+################################
+FormatPval <- function(Pval) {
+  stars <- ifelse(Pval > .1, "ns",
+                  ifelse(Pval > .05, ".",
+                         ifelse(Pval > .01, "*",
+                                ifelse(Pval > .001, "**",
+                                       c("***")))))
+  
+  p <- as.character(ifelse(Pval > .1, round(Pval, 3),
+                           ifelse(Pval < .001, "bold('<0.001')", 
+                                  # shown with bold font. Note that inside of
+                                  # bold needs to be in ''
+                                  paste("bold(", round(Pval, 3), ")", sep = "'"))))
+  return(data.frame(stars, p))
+} 
+
+########################################
+# Create summary stat table from anova #
+########################################
+StatTable <- function(x, variable) { # x is anova result
+  df <- data.frame(predictor = c(row.names(x)),
+                   rbind(FormatPval(x$Pr)))
+  
+  # add a row for column name of the table in the fig 
+  df <- rbind(df, data.frame(predictor = "", 
+                             stars = "italic('P<F')", 
+                             p = "italic('P<F')"))
+  
+  result <- merge(df, data.frame(predictor = c("co2", "time", "co2:time")), all = TRUE)
+  
+  # replace NA with ns
+  result <- within(result, {
+    p <- ifelse(is.na(p), "ns", as.character(p)) 
+    # ifelse tries to return factor, so use as.character
+    stars <- ifelse(is.na(stars), "ns", as.character(stars))
+  })
+  
+  # relabel for plotting
+  result$predictor <- factor(result$predictor, 
+                             labels = c("", "CO[2]", "Time", "CO[2]*~x~Time"), 
+                             levels = c("", "co2", "time", "co2:time"))
+  result$variable <- variable
+  result <- result[order(result$predictor), ]
+  return(result)
+}
+
+############################################
+# Create df to add a stat table to figures #
+############################################
+StatPositionDF <- function(StatRes, variable, ytop, ymax, gap = .07){
+  d <- data.frame(variable, ytop, gap = gap * ymax) 
+  # ytop is y coordinate for the top (i.e. CO2) of the table for each fig 
+  # (variable), ymax is the maximum value of the plot (i.e. max(mean+SE)).  
+  # 0.1 * ymax is used to determine the gap between each row of the table
+  
+  predictor <- levels(StatRes$predictor)
+  
+  # create df which contains variable, predictor and y coordinates for the other
+  # predictors (i.e. Time, CO2xTime) which is ymax*0.1 (= gap) lower than one above
+  d2 <- ddply(d, .(variable),
+              function(x){
+                data.frame(predictor, 
+                           ldply(1:length(predictor), function(z) x$ytop - z * x$gap))
+              })
+  names(d2)[3] <- "yval"
+  
+  # mege every thing
+  d3 <- merge(d2, StatRes, by = c("variable", "predictor"))
+  d3$co2 <- "amb" # co2 column is required for ggplot
+  return(d3)
+}
