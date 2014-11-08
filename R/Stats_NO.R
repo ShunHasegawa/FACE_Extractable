@@ -206,5 +206,8 @@ Anova(Fml_ancv)
 # F-test
 AnvF_no
 
+# squared r
+rsquared.glmm(Fml_ancv)
+
 # 95% CI for estimated parameter
 Est_NO

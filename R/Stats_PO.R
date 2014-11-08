@@ -243,5 +243,8 @@ Anova(Fml_ancv)
 # F-test
 AnvF_po
 
+# squared r
+rsquared.glmm(Fml_ancv)
+
 # 95 % CI
 Est_P
