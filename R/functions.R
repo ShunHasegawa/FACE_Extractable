@@ -664,8 +664,8 @@ StatTable <- function(x, variable) { # x is anova result
   
   # add a row for column name of the table in the fig 
   df <- rbind(df, data.frame(predictor = "", 
-                             stars = "italic('P<F')", 
-                             p = "italic('P<F')"))
+                             stars = "italic('P>F')", 
+                             p = "italic('P>F')"))
   
   result <- merge(df, data.frame(predictor = c("co2", "time", "co2:time")), all = TRUE)
   
