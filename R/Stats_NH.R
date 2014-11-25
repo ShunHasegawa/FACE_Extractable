@@ -93,7 +93,7 @@ LmeMod <- lme(sqrt(nh) ~ co2 * time, random = ~1|block/ring/plot, data = newDF)
 cntrst<- contrast(LmeMod, 
                   a = list(time = levels(extr$time[extr$post, drop = TRUE]), co2 = "amb"),
                   b = list(time = levels(extr$time[extr$post, drop = TRUE]), co2 = "elev"))
-FACE_Extr_PostCO2_NH_CntrstDf <- cntrstTbl(cntrst, data = extr[extr$post, ], digit = 2)
+FACE_Extr_PostCO2_NH_CntrstDf <- cntrstTbl(cntrst, data = extr[extr$post, ], variable = "nh")
 
 FACE_Extr_PostCO2_NH_CntrstDf
 

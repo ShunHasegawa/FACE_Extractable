@@ -337,18 +337,18 @@ bxcxplts <- function(value, data, sval, fval){
 ####################################
 # create table of contrast results #
 ####################################
-cntrstTbl <- function(cntrstRes, data, ...){
-  d <- unique(data$date)
-  ds <- format(d, format = "%b-%Y")
-  
+cntrstTbl <- function(cntrstRes, data, variable, ...){
+  d <- unique(data[, c("date", "time")])
   Df <- data.frame(
-    date = ds,
-    contrast  =  cntrst$Contrast,
-    SE = cntrst$SE,
-    t = cntrst$testStat,
-    df = cntrst$df,
-    P.value = cntrst$Pvalue)
-  return(format(Df, ...))
+    d,
+    contrast  =  cntrstRes$Contrast,
+    SE = cntrstRes$SE,
+    t = cntrstRes$testStat,
+    df = cntrstRes$df,
+    P.value = cntrstRes$Pvalue,
+    FormatPval(cntrstRes$Pvalue),
+    variable = variable)
+  return(Df)
 }
 
 
@@ -641,11 +641,11 @@ source("R/rsquaredglmm.R")
 # Return star based on P value #
 ################################
 FormatPval <- function(Pval) {
-  stars <- ifelse(Pval > .1, "ns",
-                  ifelse(Pval > .05, ".",
-                         ifelse(Pval > .01, "*",
-                                ifelse(Pval > .001, "**",
-                                       c("***")))))
+  stars <- ifelse(Pval > .1, "",
+                  ifelse(Pval > .05, "scriptstyle('\u2020')",
+                         ifelse(Pval > .01, "'*'",
+                                ifelse(Pval > .001, "'**'",
+                                       c("'***'")))))
   
   p <- as.character(ifelse(Pval > .1, round(Pval, 3),
                            ifelse(Pval < .001, "bold('<0.001')", 
