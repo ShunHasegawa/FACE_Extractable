@@ -48,12 +48,26 @@ load("output//data//FACE_extractable_CO2xTime_Stats.RData")
 # ymax value for each variable
 ymaxDF <- ddply(TrtMean, .(variable), function(x) max(x$Mean + x$SE, na.rm = TRUE))
 
+# load contrastDF to annotate stat result and combine with max values from
+# TrtMean as y position
+load("Output//data/FACE_Extractable_ContrastDF.RData")
+Antt_CntrstDF <- merge(ContrastDF, 
+                       ddply(TrtMean, .(date, variable), summarise, yval = max(Mean + SE)),
+                       # this return maximum values
+                       by = c("date", "variable"), all.x = TRUE)
+Antt_CntrstDF$co2 <- "amb" # co2 column is required as it's used for mapping
+Antt_CntrstDF <- subset(Antt_CntrstDF, stars != "") 
+  # remove empty rows as they causes trouble when using geom_text
+
 # create a plot
 p <- WBFig(data = TrtMean, 
            ylab = expression(Soil~nutrients~(mg~kg^"-1")),
            facetLab = ylab_label,
            StatRes = Stat_CO2Time, 
-           StatY = c(ymaxDF[1, 2] + .3, ymaxDF[2:3, 2]))
+           StatY = c(ymaxDF[1, 2] + .3, ymaxDF[2:3, 2])) +
+  geom_text(data = Antt_CntrstDF, aes(x = date, y = yval, label = stars), 
+            vjust = 0, parse = TRUE)
+
 ggsavePP(filename = "Output//Figs/FACE_Manuscript/FACE_Extractable", plot = p, 
          width = 6, height = 6)
 
