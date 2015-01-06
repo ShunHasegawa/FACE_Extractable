@@ -244,7 +244,7 @@ Anova(Fml_ancv)
 AnvF_po
 
 # squared r
-rsquared.glmm(Fml_ancv)
+# rsquared.glmm(Fml_ancv)
 
 # 95 % CI
 Est_P
