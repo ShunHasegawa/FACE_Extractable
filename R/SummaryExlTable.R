@@ -3,7 +3,7 @@ extrMlt <- melt(extr, id = names(extr)[which(!(names(extr) %in% c("no", "nh", "p
 
 # Ring summary table & mean
 RngSmmryTbl <- dlply(extrMlt, .(variable), function(x) CreateTable(x, fac = "ring", digit = 1, nsmall = 2))
-RngMean <- ddply(extrMlt, .(time, date, co2, ring, variable), summarise, value = mean(value, na.rm = TRUE)) 
+RngMean <- ddply(extrMlt, .(time, date, co2, ring, block, variable), summarise, value = mean(value, na.rm = TRUE)) 
 
 # treat summary table $ mean
 TrtSmmryTbl <- dlply(RngMean, .(variable), function(x) CreateTable(x, fac = "co2",  digit = 1, nsmall =2))
