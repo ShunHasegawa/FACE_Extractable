@@ -61,7 +61,7 @@ Antt_CntrstDF <- subset(Antt_CntrstDF, stars != "")
 
 # create a plot
 p <- WBFig(data = TrtMean, 
-           ylab = expression(Soil~nutrients~(mg~kg^"-1")),
+           ylab = expression(Extractable~soil~nutrients~(mg~kg^"-1")),
            facetLab = ylab_label,
            StatRes = Stat_CO2Time, 
            StatY = c(ymaxDF[1, 2] + .3, ymaxDF[2:3, 2])) +
