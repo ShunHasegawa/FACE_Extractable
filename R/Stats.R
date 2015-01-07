@@ -56,7 +56,7 @@ source("R/Stats_PO.R")
 # create summary list
 StatSmmryLst <- list("Nitrate" = list(AnvF_no, Est_NO),
                      "Ammonium" = list(AnvF_nh, Est_nh),
-                     "Phosphate" = list(AnvF_P, Est_P))
+                     "Phosphate" = list(AnvF_po, Est_P))
 
 # save in a single excel file
 wb <- createWorkbook()
