@@ -659,9 +659,8 @@ source("R/rsquaredglmm.R")
 # Return star based on P value #
 ################################
 FormatPval <- function(Pval) {
-  stars <- ifelse(Pval > .1, "",
-                  ifelse(Pval > .05, "scriptstyle('\u2020')",
-                         ifelse(Pval > .01, "'*'",
+  stars <- ifelse(Pval > .5, "",
+                  ifelse(ifelse(Pval > .01, "'*'",
                                 ifelse(Pval > .001, "'**'",
                                        c("'***'")))))
   
