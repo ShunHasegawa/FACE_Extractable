@@ -72,6 +72,24 @@ ggsavePP(filename = "Output//Figs/FACE_Manuscript/FACE_Extractable", plot = p,
          width = 6, height = 6)
 
 
+######################
+## for GroupMeeting ##
+######################
+poster_theme <- theme(panel.grid.major = element_blank(),
+                      panel.grid.minor = element_blank(),
+                      axis.text.x = element_text(angle=45, vjust= 1, hjust = 1, 
+                                                 size = 13),
+                      legend.position = "non",
+                      axis.title.y = element_text(size = 15),
+                      plot.title = element_text(size = 25, face = "bold"))
+
+pl  <- PltCO2Mean(subsetD(TrtMean, variable == "po")) +
+  labs(x = NULL, y = expression(Extractable*-soil~PO[4]^"3-"~(mg~kg^"-1")))+
+  poster_theme
+ggsavePP(filename = "Output//Figs//GroupMeeting/FACE_Extractable_CO2_P", plot = pl, width = 6, height = 4)
+
+
+
 #######################
 # Plot soil variables #
 #######################

@@ -102,15 +102,23 @@ PltMean <- function(data, ...){
   
   p <- ggplot(data, aes_string(x = "date", y = "Mean", ...))
   
-  p2 <- p + geom_line(size = 1) + 
-    geom_errorbar(aes_string(ymin = "Mean - SE", ymax = "Mean + SE", ...), width = 5) + 
+  p2 <- p + 
+    geom_rect(xmin = -Inf, 
+              xmax = as.numeric(as.Date("2012-09-18")),
+              ymin = -Inf, ymax = Inf,
+              fill = "grey80", col = "grey80") +
+    geom_line(size = 1.5, position = position_dodge(10), alpha = .8) + 
+    geom_errorbar(aes_string(ymin = "Mean - SE", ymax = "Mean + SE", ...), 
+                  width = 20, 
+                  position = position_dodge(10),
+                  alpha = .8) + 
     labs(x = "Time", y = ylab) +
     geom_vline(xintercept = as.numeric(as.Date("2012-09-18")), 
                linetype = "dashed", 
                col = "black") +
     scale_x_date(breaks= date_breaks("2 month"),
                  labels = date_format("%b-%y"),
-                 limits = as.Date(c("2012-7-1", "2014-4-2"))) +
+                 limits = as.Date(c("2012-6-15", "2014-4-2"))) +
     theme(axis.text.x  = element_text(angle=45, vjust= 1, hjust = 1))
 }
 
@@ -129,22 +137,23 @@ PltRnghMean <- function(data){
     return(p)
 }
 
-######################
-# Plot temp trt mean #
-######################
+#####################
+# Plot co2 trt mean #
+#####################
 PltCO2Mean <- function(data){
   p <- PltMean(data, col = "co2") +
     scale_color_manual(values = c("blue", "red"), 
                        expression(CO[2]~trt),
                        labels = c("Ambient", expression(eCO[2])))
   
-  # add asterisk on NH graphs at co3 treatments
-  if(!any(unique(data$variable) == "nh")) p else{
-    newDF <- subset(data, time %in% c(3, 7) & variable == "nh") # the times and variable where "*" is placed
+  # add asterisk on P graphs at co2 treatments
+  if(!any(unique(data$variable) == "po")) p else{
+    newDF <- subset(data, time == 4) # the times where "*" is placed
     ant_pos <- ddply(newDF, .(date, variable), summarise, Mean = max(Mean + SE)) #y position of "*"
+    ant_pos <- subset(ant_pos, variable == "po") # only applied to PO data
     ant_pos$lab <- "*"
-    ant_pos$temp <- factor("amb", levels=c("amb", "elve")) 
-    # the original data frame uses "temp", so it needs to have "temp" as well in ggplot2
+    ant_pos$co2 <- factor("amb", levels=c("amb", "elev")) 
+    # the original data frame uses "co2", so it needs to have "co2" as well in ggplot2
     # but it doesn't really do anything    
     p +  geom_text(data = ant_pos, aes(x =date, y = Mean, label= lab), col = "black", vjust = 0)
   }
