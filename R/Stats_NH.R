@@ -177,8 +177,18 @@ qqnorm(resid(m3))
 qqline(resid(m3))
 plot(allEffects(m3))
 # This looks better so use this
+
+# co2 is not significnat (P > .1) with F test, so remove this time
+m4 <- lmer(sqrt(nh) ~ Moist + Temp_Mean + (1|block) + (1|ring) + (1|id), data = newDF)
+anova(m3, m4)
+Anova(m4, test.statistic = "F")
+plot(m4)
+qqnorm(resid(m4))
+qqline(resid(m4))
+plot(allEffects(m4))
+
 Iml_ancv <- m1
-Fml_ancv <- m3
+Fml_ancv <- m4
 
 AnvF_nh <- Anova(Fml_ancv, test.statistic = "F")
 AnvF_nh
@@ -187,13 +197,7 @@ AnvF_nh
 ciDF <- CIdf(Fml_ancv)
 
 # calculate actual values
-Est.val <- rbind(
-  int = ciDF[1, ],
-  co2elev = ciDF[2, ] + ciDF[1, 3],
-  Moist = ciDF[3, ],
-  Temp_Mean = ciDF[4, ]
-)
-
+Est.val <- ciDF
 Est.val
 
 # reshape Est.val and make a table
