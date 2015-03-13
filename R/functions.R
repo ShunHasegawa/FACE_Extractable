@@ -158,7 +158,9 @@ science_theme <- theme(panel.grid.major = element_blank(),
                        panel.grid.minor = element_blank(),
                        axis.text.x  = element_text(angle=45, vjust= 1, hjust = 1),
                        legend.position = c(.4, .93), 
-                       legend.title = element_blank())
+                       legend.title = element_blank(),
+                       legend.key.width = unit(2, "lines"),
+                       legend.key = element_blank())
 
 # white-black figure
 WBFig <- function(data, ylab, facetLab = ylab_label, figTheme = science_theme,
