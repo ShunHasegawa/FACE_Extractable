@@ -162,7 +162,7 @@ science_theme <- theme(panel.border = element_rect(color = "black"),
                        axis.ticks.margin = unit(.5, "lines"),
                        legend.position = c(.4, .93), 
                        legend.title = element_blank(),
-                       legend.key.width = unit(2, "lines"),
+                       legend.key.width = unit(2.5, "lines"),
                        legend.key = element_blank())
 
 # white-black figure
@@ -197,18 +197,20 @@ WBFig <- function(data, ylab, facetLab = ylab_label, figTheme = science_theme,
   # create a plot
   p <- ggplot(data, aes(x = date, y = Mean, group = co2))
   
-  p2 <- p + geom_line(aes(linetype = co2),
-                      position = position_dodge(20)) + 
-    geom_errorbar(aes(ymin = Mean - SE, ymax = Mean + SE), 
-                  width = 15, size = .3,
-                  position = position_dodge(20)) + 
-    geom_point(aes(fill = co2), shape = 21,  position = position_dodge(20)) +
-    labs(x = "Month", y = ylab) +
+  p2 <- p + 
     geom_vline(xintercept = as.numeric(as.Date("2012-09-18")), 
                linetype = "dashed", col = "black") +
+    geom_line(aes(linetype = co2), position = position_dodge(20)) + 
+    geom_errorbar(aes(ymin = Mean - SE, ymax = Mean + SE), 
+                  width = 0, 
+                  position = position_dodge(20)) + 
+    geom_point(aes(fill = co2), 
+               shape = 21, size = 4,   
+               position = position_dodge(20)) +
+    labs(x = "Month", y = ylab) +
     scale_x_date(breaks= date_breaks("3 month"),
                  labels = date_format("%b-%y"),
-                 limits = as.Date(c("2012-6-15", "2014-4-2"))) +
+                 limits = as.Date(c("2012-6-15", "2014-3-29"))) +
     scale_fill_manual(values = c("black", "white"), 
                       labels = c("Ambient", expression(eCO[2]))) +
     scale_linetype_manual(values = c("solid", "dashed"), 
@@ -220,13 +222,13 @@ WBFig <- function(data, ylab, facetLab = ylab_label, figTheme = science_theme,
     facet_grid(variable~., scales= "free_y", labeller= facetLab) +
     figTheme +
     geom_text(data = subset(statDF, predictor != ""), 
-              aes(x = as.Date("2014-1-20"), y = yval, label = predictor),
-              size = 2, hjust = 1, parse = TRUE) +
+              aes(x = as.Date("2014-1-30"), y = yval, label = predictor),
+              size = 3, hjust = 1, parse = TRUE) +
     # unless remove [" "] with predictor != "", labels will be messed up due to
     # this empty level
     geom_text(data = statDF, 
-              aes(x = as.Date("2014-2-20"), y = yval, label = p), 
-              size = 2, parse = TRUE)
+              aes(x = as.Date("2014-3-20"), y = yval, label = p), 
+              size = 3, parse = TRUE)
   return(p2)
 }
 
@@ -710,7 +712,7 @@ StatTable <- function(x, variable) { # x is anova result
 ############################################
 # Create df to add a stat table to figures #
 ############################################
-StatPositionDF <- function(StatRes, variable, ytop, ylength, gap = .07){
+StatPositionDF <- function(StatRes, variable, ytop, ylength, gap = .1){
   d <- data.frame(variable, ytop, gap = gap * ylength) 
   # ytop is y coordinate for the top (i.e. CO2) of the table for each fig 
   # (variable), ylength is the difference of max and min value of the plot (i.e.
