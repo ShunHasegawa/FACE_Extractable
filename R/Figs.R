@@ -69,7 +69,7 @@ p <- WBFig(data = TrtMean,
             vjust = 0, parse = TRUE)
 
 ggsavePP(filename = "Output//Figs/FACE_Manuscript/FACE_Extractable", plot = p, 
-         width = 6, height = 6)
+         width = 6.65, height = 6.65)
 
 
 #######################
