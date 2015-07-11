@@ -1,0 +1,157 @@
+\documentclass[11pt]{article}
+
+\usepackage{fullpage}
+\usepackage{pdfpages}
+\usepackage{float}
+\usepackage[hidelinks]{hyperref}
+
+\title{FACE soil extractable nutrient stoichiometry}
+\author{Shun Hasegawa}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+<<setup, include=FALSE>>=
+library(knitr)
+opts_chunk$set(concordance = TRUE, warning = FALSE, tidy = TRUE, tidy.opts = list(width.cutoff = 60))
+opts_knit$set(root.dir=normalizePath('../'))
+@
+
+<<ReadLibrary, message=FALSE>>=
+library(car)
+library(MASS)
+library(lme4)
+library(nlme)
+library(lattice)
+library(plyr)
+library(effects)
+library(lmerTest)
+library(quantmod) # compute % change
+
+# load data and functions
+load("Output/Data/extr_tmp.RData")
+source("R/functions_tmp.R")
+source("R/rsquaredglmm.R")
+@
+
+<<readFiles, include=FALSE>>=
+read_chunk("R/Stats_NPRatio.R")
+@
+
+<<Stat_FACE_Extr_NPRatio_PostCO2, results='markup'>>=
+@
+
+\clearpage
+\section{N:P ratio}
+Firstly, N:P ratios are simply analysed with CO$_2$, time and their interaction. N is given by the sum of nitrate and ammonium.
+
+<<SummaryTable, results='asis', echo=FALSE>>=
+extr_ring <- ddply(extr, .(date, ring, co2), function(x) colMeans(x[, c("NP", "pcNP")]))
+library(reshape2)
+library(gmodels)
+library(xtable)
+extr_ring_mlt <- melt(extr_ring, id = c("date", "ring", "co2"))
+
+tempFun <- function(x){
+  a <- x[c("date", "co2", "value")] #extract required columns
+  colnames(a) <- c("date","variable","value") #change column names for cast
+  means <- dcast(a, date~variable, mean, na.rm = TRUE) 
+  ses <- dcast(a,date~variable,function(x) ci(x,na.rm=TRUE)[4])
+  colnames(ses)[2:ncol(ses)] <- paste(colnames(ses)[2:ncol(ses)],"SE",sep=".")
+  samples <- dcast(a,date~variable,function(x) sum(!is.na(x))) #sample size
+  colnames(samples)[2:ncol(samples)] <- paste(colnames(samples)[2:ncol(samples)],"N",sep=".")
+  mer <- Reduce(function(...) merge(..., by = "date"), list(means, ses, samples))
+  mer <- mer[,c(1, 
+                order(names(mer)[-grep("date|N|Ratio", names(mer))])+1, 
+                grep("N|Ratio", names(mer)))]
+  mer$date <- as.character(mer$date) # date is turned into character for knitr output 
+  return(mer)
+}
+
+extr_co2 <- dlply(extr_ring_mlt, .(variable), tempFun)
+
+print(xtable(extr_co2[[1]], caption = "CO2 mean of N:P ratio"), 
+      include.rownames=FALSE)
+@
+
+<<Stat_FACE_Extr_Analyse_NP, results='markup', fig.height=5>>=
+@
+
+<<Stat_FACE_Extr_Analyse_NP_plot, fig.width = 3, fig.height=3, fig.show='hold'>>=
+@
+
+<<Stat_FACE_Extr_Analyse_NP_plot2, fig.width = 3, fig.height=3, fig.show='hold'>>=
+@
+
+<<Stat_FACE_Extr_Analyse_NP_plot3, fig.height=5>>=
+@
+
+There was a significant CO$_2$ interaction, but CO$_2$ effect was very clear and direction is seasonal-dependent. Sometimes N:P ratios were higher in ambient rings and sometimes not. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%
+% % change of NP ratio %
+%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+\section{Percent change of N:P ratio}
+Secondly, percent change of N:P ratio is also analysed. The ratio is calculated as follows.
+$$Ratio = \frac{\frac{N_{t+1}}{N_{t}}}{\frac{P_{t+1}}{P_{t}}}$$
+
+<<SummaryTable_pcNP, results='asis', echo=FALSE>>=
+print(xtable(extr_co2[[2]], 
+             caption = "CO2 mean of percent change of N:percent change of P ratio"), 
+      include.rownames=FALSE)
+@
+
+<<Stat_FACE_Extr_Analyse_pcNP, results='markup', fig.height=5>>=
+@
+
+<<Stat_FACE_Extr_Analyse_pcNP_plot, fig.width = 3, fig.height=3, fig.show='hold'>>=
+@
+
+<<Stat_FACE_Extr_Analyse_pcNP_plot2, fig.width = 3, fig.height=3, fig.show='hold'>>=
+@
+
+<<Stat_FACE_Extr_Analyse_pcNP_plot3, fig.height=5>>=
+@
+
+There was a significant CO$_2$ effect, but again CO$_2$ effect is not cleare. Percent change of NP seems to vary more in ambient than eCO$_2$ rings.
+
+%%%%%%%%%%
+% ANCOVA %
+%%%%%%%%%%
+\clearpage
+\section{ANCOVA with soil variables}
+The above analysis showed a significant CO$_2$xTime interaction, but CO$_2$ effects are not clear. So ANCOVA is performed here using soil moisture and temperature as covariates.
+
+\subsection{N:P ratio}
+<<Stat_FACE_Extr_NPRatio_ANCOVA, results='markup', fig.height=5>>=
+@
+
+<<Stat_FACE_IEM_NPRatio_ANCOVA_plot, results='markup', fig.height=3, fig.width=3, fig.show='hold'>>=
+@
+
+There was a significant CO$_2$ x Temp interaction. Temperature was positvely correlated to log(NP).
+
+\subsection{Percent change of N:P ratios}
+<<Stat_FACE_Extr_pcNP_ANCOVA, results='markup', fig.height=5>>=
+@
+
+<<Stat_FACE_Extr_pcNP_ANCOVA_plot, results='markup', fig.height=3, fig.width=3, fig.show='hold'>>=
+@
+
+There was a significant CO$_2$ x temperature interaction for both types of NP ratios. N:P ratios are positively correlated with temperature and a slope is steaper in eCO$_2$ rings.
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}
