@@ -81,5 +81,5 @@ save(Stat_CO2Time, file = "Output//Data/FACE_extractable_CO2xTime_Stats.RData")
 ########################
 ## Result of contrast ##
 ########################
-ContrastDF <- rbind(FACE_Extr_PostCO2_NH_CntrstDf, FACE_Extr_PostCO2_PO_CntrstDf)
+ContrastDF <- rbind(FACE_Extr_PostCO2_NH_CntrstDf)
 save(ContrastDF, file = "Output//Data/FACE_Extractable_ContrastDF.RData")
