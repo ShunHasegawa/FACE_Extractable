@@ -10,38 +10,28 @@ bxplts(value= "no", data= subsetD(extr, pre))
   # log seems slightly better
 
 # different random factor strucures
-m1 <- lme(log(no) ~ co2 * time, random = ~1|block/ring/plot, data = subsetD(extr, pre))
-RndmComp(m1)$anova
-# model3 is the best but use m1 for the time being
-
-# autocorelation
-atml <- atcr.cmpr(m1)
-atml$models
-# no need for correlation
-
-Iml_pre <- atml[[1]]
+Iml_pre_no <- lmer(log(no) ~ co2 * time + (1|block/ring/plot), data = subsetD(extr, pre))
 
 # The starting model is:
-Iml_pre$call
-Anova(Iml_pre)
+Iml_pre_no@call
+Anova(Iml_pre_no)
+Anova(Iml_pre_no, test.statistic = "F")
 
 # model simplification
-Fml_pre <- MdlSmpl(Iml_pre)$model.reml
-Anova(Fml_pre)
-  # very merginal significant co2:time interaction
+Fml_pre_no <- stepLmer(Iml_pre_no, alpha.fixed = .1)
+Anova(Fml_pre_no)
 
 # The final model is:
-Fml_pre$call
+Fml_pre_no@call
 
-Anova(Fml_pre)
+Anova(Fml_pre_no)
 
-summary(Fml_pre)
+summary(Fml_pre_no)
 
 # model diagnosis
-plot(Fml_pre)
-qqnorm(Fml_pre, ~ resid(.)|id)
-qqnorm(residuals.lm(Fml_pre))
-qqline(residuals.lm(Fml_pre))
+plot(Fml_pre_no)
+qqnorm(residuals(Fml_pre_no))
+qqline(residuals(Fml_pre_no))
 
 ## ----Stat_FACE_Extr_Nitrate_PostCO2
 
@@ -53,24 +43,24 @@ bxplts(value= "no", data= subsetD(extr, post))
   # log seems better
 
 # The initial model
-Iml_post <- lmer(log(no) ~ co2 * time + (1|block)+ (1|ring) + (1|id), 
+Iml_post_no <- lmer(log(no) ~ co2 * time + (1|block)+ (1|ring) + (1|id), 
                  data = subsetD(extr, post))
-Anova(Iml_post)
+Anova(Iml_post_no)
 
 # Model simplification
-Fml_post <- stepLmer(Iml_post)
-Anova(Fml_post)
-AnvF_NO_post <- Anova(Fml_post, test.statistic = "F") 
+Fml_post_no <- stepLmer(Iml_post_no, alpha.fixed = .1)
+Anova(Fml_post_no)
+AnvF_NO_post <- Anova(Fml_post_no, test.statistic = "F") 
 AnvF_NO_post
 
-summary(Fml_post)
+summary(Fml_post_no)
 
-# plot(allEffects(Fml_post))
+# plot(allEffects(Fml_post_no))
 
 # model diagnosis
-plot(Fml_post)
-qqnorm(residuals(Fml_post))
-qqline(residuals(Fml_post))
+plot(Fml_post_no)
+qqnorm(residuals(Fml_post_no))
+qqline(residuals(Fml_post_no))
   #not great
 
 ## ---- Stat_FACE_Extr_Nitrate_postCO2_withSoilVar
@@ -105,24 +95,24 @@ print(xyplot(log(no) ~ Temp_Mean | ring + plot, m1$Data, type = c("r", "p")))
 # looks fine
 
 ## Analysis
-Iml_ancv <- m1$Initial
-Anova(Iml_ancv)
+Iml_ancv_no <- m1$Initial
+Anova(Iml_ancv_no)
 
-Fml_ancv <- stepLmer(Iml_ancv)
-Anova(Fml_ancv)
-AnvF_no <- Anova(Fml_ancv, test.statistic = "F")
+Fml_ancv_no <- stepLmer(Iml_ancv_no)
+Anova(Fml_ancv_no)
+AnvF_no <- Anova(Fml_ancv_no, test.statistic = "F")
 AnvF_no
 
-plot(allEffects(Fml_ancv))
-plot(Fml_ancv)
-qqnorm(resid(Fml_ancv))
-qqline(resid(Fml_ancv))
+plot(allEffects(Fml_ancv_no))
+plot(Fml_ancv_no)
+qqnorm(resid(Fml_ancv_no))
+qqline(resid(Fml_ancv_no))
 
 ########################
 # Confidence intervals #
 ########################
 # confidence interval for estimated parameters
-ciDF <- CIdf(model = Fml_ancv)
+ciDF <- CIdf(model = Fml_ancv_no)
 Est.val <- ciDF
 Est.val
 
@@ -145,23 +135,23 @@ print(xyplot(log(no) ~ Temp_Mean | ring + plot, df, type = c("r", "p")))
 # looks fine
 
 ## Analysis
-Iml_ancv_pc <- lmer(log(no) ~ co2 * (Moist + Temp_Mean) + (1|block) + (1|ring) + (1|id), data = df)
+Iml_ancv_no_pc <- lmer(log(no) ~ co2 * (Moist + Temp_Mean) + (1|block) + (1|ring) + (1|id), data = df)
 
-Anova(Iml_ancv_pc)
+Anova(Iml_ancv_no_pc)
 
-Fml_ancv_pc <- stepLmer(Iml_ancv_pc)
-Anova(Fml_ancv_pc)
-Anova(Fml_ancv_pc, test.statistic = "F")
+Fml_ancv_no_pc <- stepLmer(Iml_ancv_no_pc)
+Anova(Fml_ancv_no_pc)
+Anova(Fml_ancv_no_pc, test.statistic = "F")
 
 # main effect
-plot(allEffects(Fml_ancv_pc))
+plot(allEffects(Fml_ancv_no_pc))
 
-plot(Fml_ancv_pc)
-qqnorm(resid(Fml_ancv_pc))
-qqline(resid(Fml_ancv_pc))
+plot(Fml_ancv_no_pc)
+qqnorm(resid(Fml_ancv_no_pc))
+qqline(resid(Fml_ancv_no_pc))
 
 # 95% CI for estimated parameters
-ciDF <- CIdf(Fml_ancv_pc)
+ciDF <- CIdf(Fml_ancv_no_pc)
 ciDF
 
 ###########
@@ -170,23 +160,23 @@ ciDF
 
 ## ----Stat_FACE_Extr_Nitrate_PreCO2Smmry
 # The starting model is:
-Iml_pre$call
-Anova(Iml_pre)
+Iml_pre_no@call
+Anova(Iml_pre_no)
 
 # The final model is:
-Fml_pre$call
-Anova(Fml_pre)
+Fml_pre_no@call
+Anova(Fml_pre_no)
 
 ## ----Stat_FACE_Extr_Nitrate_PostCO2Smmry
 # The starting model is:
-Iml_post@call
-Anova(Iml_post)
+Iml_post_no@call
+Anova(Iml_post_no)
 
 # The final model is:
-Fml_post@call
+Fml_post_no@call
 
 # Chi-square
-Anova(Fml_post)
+Anova(Fml_post_no)
 
 # F test
 AnvF_NO_post
@@ -194,20 +184,20 @@ AnvF_NO_post
 ## ---- Stat_FACE_Extr_Nitrate_postCO2_withSoilVarSmmry
 
 # The initial model is:
-Iml_ancv@call
-Anova(Iml_ancv)
+Iml_ancv_no@call
+Anova(Iml_ancv_no)
 
 # The final model is:
-Fml_ancv@call
+Fml_ancv_no@call
 
 # Chisq
-Anova(Fml_ancv)
+Anova(Fml_ancv_no)
 
 # F-test
 AnvF_no
 
 # squared r
-rsquared.glmm(Fml_ancv)
+rsquared.glmm(Fml_ancv_no)
 
 # 95% CI for estimated parameter
 Est_NO

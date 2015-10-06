@@ -9,39 +9,26 @@ bxplts(value= "nh", data= subsetD(extr, pre))
 # row data seems better
 
 # different random factor strucures
-m1 <- lme(nh ~ co2 * time, random = ~1|block/ring/plot, data = subsetD(extr, pre))
-RndmComp(m1)$anova
-  # model2, 3 are better but use m1 for the time being
-
-# autocorelation
-atml <- atcr.cmpr(m1)
-atml$models
-  # no need for autocorrelation
-
-Iml_pre <- atml[[1]]
+Iml_pre_nh <- lmer(nh ~ co2 * time + (1|block/ring/plot), data = subsetD(extr, pre))
 
 # The starting model is:
-Iml_pre$call
-Anova(Iml_pre)
+Iml_pre_nh@call
+Anova(Iml_pre_nh)
 
 # model simplification
-MdlSmpl(Iml_pre)
-  # time:co2, co2 are removed
-
-Fml_pre <- MdlSmpl(Iml_pre)$model.reml
+Fml_pre_nh <- stepLmer(Iml_pre_nh, alpha.fixed = .1)
 
 # The final model is:
-Fml_pre$call
+Fml_pre_nh@call
 
-Anova(Fml_pre)
+Anova(Fml_pre_nh)
 
-summary(Fml_pre)
+summary(Fml_pre_nh)
 
 # model diagnosis
-plot(Fml_pre)
-qqnorm(Fml_pre, ~ resid(.)|id)
-qqnorm(residuals.lm(Fml_pre))
-qqline(residuals.lm(Fml_pre))
+plot(Fml_pre_nh)
+qqnorm(resid(Fml_pre_nh))
+qqline(resid(Fml_pre_nh))
 
 ## ----Stat_FACE_Extr_Ammonium_PostCO2
 
@@ -53,26 +40,26 @@ bxplts(value= "nh", data= subsetD(extr, post))
   # sqrt seems better
 
 # The initial model
-Iml_post <- lmer(sqrt(nh) ~ co2 * time + (1|block)+ (1|ring) + (1|id), 
+Iml_post_nh <- lmer(sqrt(nh) ~ co2 * time + (1|block)+ (1|ring) + (1|id), 
                  data = subsetD(extr, post))
-Anova(Iml_post)
-Anova(Iml_post, test.statistic = "F")
+Anova(Iml_post_nh)
+Anova(Iml_post_nh, test.statistic = "F")
   # no need to remove anything
 
 # Model simplification
-Fml_post <- Iml_post
-Anova(Fml_post)
-AnvF_NH_post <- Anova(Fml_post, test.statistic = "F") 
+Fml_post_nh <- Iml_post_nh
+Anova(Fml_post_nh)
+AnvF_NH_post <- Anova(Fml_post_nh, test.statistic = "F") 
 AnvF_NH_post
 
-summary(Fml_post)
+summary(Fml_post_nh)
 
-# plot(allEffects(Fml_post))
+# plot(allEffects(Fml_post_nh))
 
 # model diagnosis
-plot(Fml_post)
-qqnorm(residuals(Fml_post))
-qqline(residuals(Fml_post))
+plot(Fml_post_nh)
+qqnorm(residuals(Fml_post_nh))
+qqline(residuals(Fml_post_nh))
   # not great
 
 ############
@@ -86,7 +73,9 @@ qqline(residuals(Fml_post))
 # This will give you error message for the contrast test saying Non-positive
 # definite approximate variance-covariance. so relvel fixed factor and rerun.
 newDF <- subsetD(extr, post)
-newDF$co2 <- relevel(newDF$co2, "elev")
+newDF <- within(newDF, {
+  co2 <- relevel(co2, "elev")
+  time <- relevel(time, "7")})
 
 LmeMod <- lme(sqrt(nh) ~ co2 * time, random = ~1|block/ring/plot, data = newDF)
 
@@ -126,13 +115,13 @@ print(xyplot(sqrt(nh) ~ Temp_Max | ring + plot, df, type = c("r", "p")))
 # looks fine
 
 ## Analysis
-Iml_ancv <- lmer(sqrt(nh) ~ co2 * (Moist + Temp_Mean) + (1|block) + (1|ring) + (1|id), data = df)
-Anova(Iml_ancv)
+Iml_ancv_nh <- lmer(sqrt(nh) ~ co2 * (Moist + Temp_Mean) + (1|block) + (1|ring) + (1|id), data = df)
+Anova(Iml_ancv_nh)
 
 # model simplification: Note that because no variation is explained by random
 # factors, I can't use stepLmer.
 m2 <- lmer(sqrt(nh) ~ co2 *Temp_Mean + Moist + (1|block) + (1|ring) + (1|id), data = df)
-anova(Iml_ancv, m2)
+anova(Iml_ancv_nh, m2)
 # remove co2:log(Moist)
 Anova(m2)
 Anova(m2, test.statistic = "F")
@@ -144,21 +133,21 @@ Anova(m3, test.statistic = "F")
 
 # co2:Temp_Mean is marginal. Removing this increases AIC. Keep this for time being
 
-Fml_ancv <- m2
-Anova(Fml_ancv)
-Anova(Fml_ancv, test.statistic = "F")
+Fml_ancv_nh <- m2
+Anova(Fml_ancv_nh)
+Anova(Fml_ancv_nh, test.statistic = "F")
 
 # main effect
-plot(allEffects(Fml_ancv))
+plot(allEffects(Fml_ancv_nh))
 
 # model diagnosis
-plot(Fml_ancv)
+plot(Fml_ancv_nh)
   # little bit wedged..
-qqnorm(resid(Fml_ancv))
-qqline(resid(Fml_ancv))
+qqnorm(resid(Fml_ancv_nh))
+qqline(resid(Fml_ancv_nh))
 
 ## What if remove the one top outlier
-qqval <- qqnorm(resid(Fml_ancv))
+qqval <- qqnorm(resid(Fml_ancv_nh))
 qqval$y[which(qqval$y == max(qqval$y))]
 
 newDF <- df
@@ -187,14 +176,14 @@ qqnorm(resid(m4))
 qqline(resid(m4))
 plot(allEffects(m4))
 
-Iml_ancv <- m1
-Fml_ancv <- m4
+Iml_ancv_nh <- m1
+Fml_ancv_nh <- m4
 
-AnvF_nh <- Anova(Fml_ancv, test.statistic = "F")
+AnvF_nh <- Anova(Fml_ancv_nh, test.statistic = "F")
 AnvF_nh
 
 # 95 % CI for each estimate
-ciDF <- CIdf(Fml_ancv)
+ciDF <- CIdf(Fml_ancv_nh)
 
 # calculate actual values
 Est.val <- ciDF
@@ -222,40 +211,40 @@ print(xyplot(log(pcNH + 1) ~ Moist | ring + plot, data = df, type = c("r", "p"))
 print(xyplot(log(pcNH + 1) ~ Temp_Mean | ring + plot, df, type = c("r", "p")))
 
 ## Analysis
-Iml_ancv_pc <- lmer(log(pcNH + 1) ~ co2 * (Moist + Temp_Mean) 
+Iml_ancv_nh_pc <- lmer(log(pcNH + 1) ~ co2 * (Moist + Temp_Mean) 
                     + (1|block) + (1|ring) + (1|id), data = df)
-Anova(Iml_ancv_pc)
-Fml_ancv_pc <- stepLmer(Iml_ancv_pc)
-Anova(Fml_ancv_pc)
-Anova(Fml_ancv_pc, test.statistic = "F")
-plot(allEffects(Fml_ancv_pc))
-plot(Fml_ancv_pc)
-qqnorm(resid(Fml_ancv_pc))
-qqline(resid(Fml_ancv_pc))
+Anova(Iml_ancv_nh_pc)
+Fml_ancv_nh_pc <- stepLmer(Iml_ancv_nh_pc)
+Anova(Fml_ancv_nh_pc)
+Anova(Fml_ancv_nh_pc, test.statistic = "F")
+plot(allEffects(Fml_ancv_nh_pc))
+plot(Fml_ancv_nh_pc)
+qqnorm(resid(Fml_ancv_nh_pc))
+qqline(resid(Fml_ancv_nh_pc))
 
 ## 95 % CI
-ciDF <- CIdf(Fml_ancv_pc)
+ciDF <- CIdf(Fml_ancv_nh_pc)
 ciDF
 
 ## ----Stat_FACE_Extr_Ammonium_PreCO2Smmry
 # The starting model is:
-Iml_pre$call
-Anova(Iml_pre)
+Iml_pre_nh@call
+Anova(Iml_pre_nh)
 
 # The final model is:
-Fml_pre$call
-Anova(Fml_pre)
+Fml_pre_nh@call
+Anova(Fml_pre_nh)
 
 ## ----Stat_FACE_Extr_Ammonium_PostCO2Smmry
 # The starting model is:
-Iml_post@call
-Anova(Iml_post)
+Iml_post_nh@call
+Anova(Iml_post_nh)
 
 # The final model is:
-Fml_post@call
+Fml_post_nh@call
 
 # Chi-square
-Anova(Fml_post)
+Anova(Fml_post_nh)
 
 # F-test
 AnvF_NH_post
@@ -266,20 +255,20 @@ FACE_Extr_PostCO2_NH_CntrstDf
 ## ---- Stat_FACE_Extr_Ammonium_postCO2_withSoilVarSmmry
 
 # Initial model
-Iml_ancv@call
-Anova(Iml_ancv)
+Iml_ancv_nh@call
+Anova(Iml_ancv_nh)
 
 # Final model
-Fml_ancv@call
+Fml_ancv_nh@call
 
 # Chisq
-Anova(Fml_ancv)
+Anova(Fml_ancv_nh)
 
 # F-test
 AnvF_nh
 
 # squared r
-rsquared.glmm(Fml_ancv)
+rsquared.glmm(Fml_ancv_nh)
 
 # 95 % CI
 Est_nh

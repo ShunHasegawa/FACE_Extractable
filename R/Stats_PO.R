@@ -6,42 +6,33 @@ range(extr$po)
 # Pre-CO2 #
 ###########
 bxplts(value= "po", data= subsetD(extr, pre))
-  # use row data
+  # use raw data
 
 # different random factor strucures
-m1 <- lme(po ~ co2 * time, random = ~1|block/ring/plot, data = subsetD(extr, pre))
-RndmComp(m1)$anova
-  # m5 is better, but use m1 for time being
-
-# autocorelation
-atml <- atcr.cmpr(m1)
-atml$models
-  # no need for autocorrelation
-
-Iml_pre <- atml[[1]]
+Iml_pre_po <- lmer(po ~ co2 * time + (1|block/ring/plot), 
+                   data = subsetD(extr, pre))
 
 # The starting model is:
-Iml_pre$call
-Anova(Iml_pre)
+Iml_pre_po@call
+Anova(Iml_pre_po)
+Anova(Iml_pre_po, test.statistic = "F")
 
 # model simplification
-MdlSmpl(Iml_pre)
-  # no factor is removed
-
-Fml_pre <- MdlSmpl(Iml_pre)$model.reml
+Fml_pre_po <- stepLmer(Iml_pre_po, alpha.fixed = .1)
 
 # The final model is:
-Fml_pre$call
+Fml_pre_po@call
 
-Anova(Fml_pre)
+Anova(Fml_pre_po)
+Anova(Fml_pre_po, test.statistic = "F")
 
-summary(Fml_pre)
+summary(Fml_pre_po)
 
 # model diagnosis
-plot(Fml_pre)
-qqnorm(Fml_pre, ~ resid(.)|id)
-qqnorm(residuals.lm(Fml_pre))
-qqline(residuals.lm(Fml_pre))
+plot(Fml_pre_po)
+qqnorm(residuals(Fml_pre_po))
+qqline(residuals(Fml_pre_po))
+
 
 ## ----Stat_FACE_Extr_Phosphate_PostCO2
 
@@ -53,38 +44,25 @@ bxplts(value= "po", data= subsetD(extr, post))
   # log seems better
 
 # The initial model
-Iml_post <- lmer(log(po) ~ co2 * time + (1|block)+ (1|ring) + (1|id), 
+Iml_post_po <- lmer(log(po) ~ co2 * time + (1|block)+ (1|ring) + (1|id), 
                  data = subsetD(extr, post))
-Anova(Iml_post)
-Anova(Iml_post, test.statistic = "F")
-# no need to remove anything
+Anova(Iml_post_po)
+Anova(Iml_post_po, test.statistic = "F")
 
 # Model simplification
-Fml_post <- Iml_post
-Anova(Fml_post)
-AnvF_P_post <- Anova(Fml_post, test.statistic = "F") 
+Fml_post_po <- stepLmer(Iml_post_po, alpha.fixed = .1)
+Anova(Fml_post_po)
+AnvF_P_post <- Anova(Fml_post_po, test.statistic = "F") 
 AnvF_P_post
 
-summary(Fml_post)
+summary(Fml_post_po)
 
-# plot(allEffects(Fml_post))
+# plot(allEffects(Fml_post_po))
 
 # model diagnosis
-plot(Fml_post)
-qqnorm(residuals(Fml_post))
-qqline(residuals(Fml_post))
-
-# contrast
-# Note that contrast doesn't work with lmer so use lme
-LmeMod <- lme(log(po) ~ co2 * time, random = ~1|block/ring/plot, 
-              data = subsetD(extr, post))
-
-cntrst<- contrast(LmeMod, 
-                  a = list(time = levels(extr$time[extr$post, drop = TRUE]), co2 = "amb"),
-                  b = list(time = levels(extr$time[extr$post, drop = TRUE]), co2 = "elev"))
-FACE_Extr_PostCO2_PO_CntrstDf <- cntrstTbl(cntrst, data = extr[extr$post, ], variable = "po")
-
-FACE_Extr_PostCO2_PO_CntrstDf
+plot(Fml_post_po)
+qqnorm(residuals(Fml_post_po))
+qqline(residuals(Fml_post_po))
 
 ## ---- Stat_FACE_Extr_Phosphate_postCO2_withSoilVar
 
@@ -117,29 +95,29 @@ print(xyplot(log(po) ~ Temp_Mean | ring + plot, m1$Data, type = c("r", "p")))
 # looks fine
 
 ## Analysis
-Iml_ancv <- m1$Initial
-# in summary Iml_ancv, it says "some computational error has occurred in 
+Iml_ancv_po <- m1$Initial
+# in summary Iml_ancv_po, it says "some computational error has occurred in 
 # lmerTest". There we can't use stepLmer so rewrite lmer for this model manually
 # this time till I find a solution. Might be partly becuse data is given within
 # the function.
-Iml_ancv <- lmer(log(po) ~ co2 * (log(Moist) + Temp_Mean) 
+Iml_ancv_po <- lmer(log(po) ~ co2 * (log(Moist) + Temp_Mean) 
             + (1 | block) + (1 |ring) + (1 | id), data = m1$Data)
-Fml_ancv <- stepLmer(Iml_ancv)
-Anova(Fml_ancv)
-AnvF_po <- Anova(Fml_ancv, test.statistic = "F")
+Fml_ancv_po <- stepLmer(Iml_ancv_po)
+Anova(Fml_ancv_po)
+AnvF_po <- Anova(Fml_ancv_po, test.statistic = "F")
 AnvF_po
 
 # main effects
-plot(allEffects(Fml_ancv))
+plot(allEffects(Fml_ancv_po))
 
 # model diagnosis
-plot(Fml_ancv)
-qqnorm(resid(Fml_ancv))
-qqline(resid(Fml_ancv))
+plot(Fml_ancv_po)
+qqnorm(resid(Fml_ancv_po))
+qqline(resid(Fml_ancv_po))
 
 ## Confidence intervals
 # confidence interval for estimated parameters
-ciDF <- CIdf(model = Fml_ancv)
+ciDF <- CIdf(model = Fml_ancv_po)
 Est.val <- ciDF
 Est.val
 
@@ -165,14 +143,14 @@ print(xyplot(pcP^(1/3) ~ Temp_Mean | ring + plot, df, type = c("r", "p")))
 # looks fine
 
 ## Analysis
-Iml_ancv_pc <- lmer(pcP^(1/3) ~ co2 * (Moist + Temp_Mean) + (1|block) + (1|ring) + (1|id), data = df)
+Iml_ancv_po_pc <- lmer(pcP^(1/3) ~ co2 * (Moist + Temp_Mean) + (1|block) + (1|ring) + (1|id), data = df)
 
-Anova(Iml_ancv_pc)
+Anova(Iml_ancv_po_pc)
 
-# Fml_ancv_pc <- stepLmer(Iml_ancv_pc)
+# Fml_ancv_po_pc <- stepLmer(Iml_ancv_po_pc)
 # gives error message as random factors don't explain any variation
 m2 <- lmer(pcP^(1/3) ~ co2 + Moist + Temp_Mean + (1|block) + (1|ring) + (1|id), data = df)
-anova(Iml_ancv_pc, m2)
+anova(Iml_ancv_po_pc, m2)
 Anova(m2)
 
 m3 <- lmer(pcP^(1/3) ~ Moist + Temp_Mean + (1|block) + (1|ring) + (1|id), data = df)
@@ -182,21 +160,21 @@ anova(m2, m3)
 anova(m2, m4)
 anova(m2, m5)
 
-Fml_ancv_pc <- m5
-Anova(Fml_ancv_pc)
-Anova(Fml_ancv_pc, test.statistic = "F")
+Fml_ancv_po_pc <- m5
+Anova(Fml_ancv_po_pc)
+Anova(Fml_ancv_po_pc, test.statistic = "F")
 
 # main effects
-plot(allEffects(Fml_ancv_pc))
+plot(allEffects(Fml_ancv_po_pc))
 
 # model diagnosis
-plot(Fml_ancv_pc)
-qqnorm(resid(Fml_ancv_pc))
-qqline(resid(Fml_ancv_pc))
+plot(Fml_ancv_po_pc)
+qqnorm(resid(Fml_ancv_po_pc))
+qqline(resid(Fml_ancv_po_pc))
 
 ## Confidence intervals ##
 # confidence interval for estimated parameters
-ciDF <- CIdf(model = Fml_ancv_pc)
+ciDF <- CIdf(model = Fml_ancv_po_pc)
 Est.val <- ciDF
 Est.val
 
@@ -205,46 +183,44 @@ Est_pcP <- ANCV_Tbl(Est.val)
 
 ## ----Stat_FACE_Extr_Phosphate_PreCO2Smmry
 # The starting model is:
-Iml_pre$call
-Anova(Iml_pre)
+Iml_pre_po@call
+Anova(Iml_pre_po)
 
 # The final model is:
-Fml_pre$call
-Anova(Fml_pre)
+Fml_pre_po@call
+Anova(Fml_pre_po)
+Anova(Fml_pre_po, test.statistic = "F")
 
 ## ----Stat_FACE_Extr_Phosphate_PostCO2Smmry
 # The starting model is:
-Iml_post@call
-Anova(Iml_post)
+Iml_post_po@call
+Anova(Iml_post_po)
 
 # The final model is:
-Fml_post@call
+Fml_post_po@call
 
 # Chi-square
-Anova(Fml_post)
+Anova(Fml_post_po)
 
 # F-test
 AnvF_P_post
 
-# contrast
-FACE_Extr_PostCO2_PO_CntrstDf
-
 ## ---- Stat_FACE_Extr_Phosphate_postCO2_withSoilVarSmmry
 # The initial model is
-Iml_ancv@call
-Anova(Iml_ancv)
+Iml_ancv_po@call
+Anova(Iml_ancv_po)
 
 # The final model is
-Fml_ancv@call
+Fml_ancv_po@call
 
 # Chisq
-Anova(Fml_ancv)
+Anova(Fml_ancv_po)
 
 # F-test
 AnvF_po
 
 # squared r
-# rsquared.glmm(Fml_ancv)
+# rsquared.glmm(Fml_ancv_po)
 
 # 95 % CI
 Est_P
