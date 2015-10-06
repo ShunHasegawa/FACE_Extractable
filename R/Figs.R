@@ -25,9 +25,9 @@ l_ply(1:3, function(x) ggsavePP(filename = fls[x], plot = TrtFg[[x]], width = 6,
 ##################################
 # labels for facet_grid
 ylabs <- list(
-  'no' = expression(KCl*-extractable~NO[3]^"-"),
-  'nh' = expression(KCl*-extractable~NH[4]^"+"),
-  'po' = expression(Bray*-extractable~PO[4]^"3-"))
+  'no' = expression(KCl*-extractable~NO[3]^"-"*-N),
+  'nh' = expression(KCl*-extractable~NH[4]^"+"*-N),
+  'po' = expression(Bray*-extractable~PO[4]^"3-"*-P))
 
 
 ylab_label <- function(variable, value){
