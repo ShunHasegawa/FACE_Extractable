@@ -33,6 +33,20 @@ plot(Fml_pre_po)
 qqnorm(residuals(Fml_pre_po))
 qqline(residuals(Fml_pre_po))
 
+############
+# contrast #
+############
+newDF <- subsetD(extr, pre)
+# newDF <- within(newDF, {
+#   co2 <- relevel(co2, "elev")
+#   time <- relevel(time, "7")})
+
+LmeMod <- lme(po ~ co2 * time, random = ~1|block/ring/plot, data = newDF)
+
+cntrst<- contrast(LmeMod, 
+                  a = list(time = levels(extr$time[extr$pre, drop = TRUE]), co2 = "amb"),
+                  b = list(time = levels(extr$time[extr$pre, drop = TRUE]), co2 = "elev"))
+cntrst
 
 ## ----Stat_FACE_Extr_Phosphate_PostCO2
 
