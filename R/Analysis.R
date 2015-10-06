@@ -19,6 +19,9 @@ extr <- ddply(extr, .(ring, plot, co2, block, id), PerChange)
 postDF <- subsetD(extr, !pre)
 save(postDF, file = "Output//Data/postDF.RData")
 
+# change post co2 for literally for post-co2
+extr$post <- !extr$pre
+
 #######################
 # Excel summary table #
 #######################
@@ -33,3 +36,6 @@ source("R/Figs.R")
 # Stats #
 #########
 source("R/Stats.R")
+
+# save all objects
+save.image(file = "Output/Data/AllObj.RData")
