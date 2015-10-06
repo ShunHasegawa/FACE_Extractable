@@ -26,10 +26,10 @@
 % @
 
 
-\subsection{Ammonium}
+\section{Ammonium}
 
 %%% CO2 trt %%%
-\subsubsection{CO$_2$ trt}
+\subsection{CO$_2$ trt}
 
 \begin{figure}[!h]\label{figure:CO2Extractable_Ammonium}
 
@@ -52,10 +52,9 @@ printTbl(TrtSmmryTbl[[2]],
 %% Stats %%
 <<ReadScript_FACE_Extr_Ammonium, echo=FALSE, cache=FALSE, include=FALSE>>=
 read_chunk('R/Stats_NH.R')
-source("R/Stats_NH.R")
 @
 
-\paragraph{Stats}
+\subsubsection{Stats}
 \paragraph{Pre-CO$_2$}
 \noindent
 
@@ -86,7 +85,7 @@ source("R/Stats_NH.R")
 
 %%% Ring %%%
 \clearpage
-\subsubsection{Ring}
+\subsection{Ring}
 
 \begin{figure}[!h]\label{figure:RingExtractable_ammonium}
 \begin{center}

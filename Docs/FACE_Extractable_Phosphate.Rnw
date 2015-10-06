@@ -25,10 +25,10 @@
 % load("Output/Data/LstDF_SoilVar.RData")
 % @
 
-\subsection{Phosphate}
+\section{Phosphate}
 
 %%% CO2 trt %%%
-\subsubsection{CO$_2$ trt}
+\subsection{CO$_2$ trt}
 
 \begin{figure}[!h]\label{figure:CO2Extractable_Phosphate}
 
@@ -51,10 +51,9 @@ printTbl(TrtSmmryTbl[[3]],
 %% Stats %%
 <<ReadScript_FACE_Extr_Phosphate, echo=FALSE, cache=FALSE, include=FALSE>>=
 read_chunk('R/Stats_PO.R')
-source("R/Stats_PO.R")
 @
 
-\paragraph{Stats}
+\subsubsection{Stats}
 \paragraph{Pre-CO$_2$}
 \noindent
 
@@ -85,7 +84,7 @@ source("R/Stats_PO.R")
 
 %%% Ring %%%
 \clearpage
-\subsubsection{Ring}
+\subsection{Ring}
 
 \begin{figure}[!h]\label{figure:RingExtractable_phosphate}
 \begin{center}

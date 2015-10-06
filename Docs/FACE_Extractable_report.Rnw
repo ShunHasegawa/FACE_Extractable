@@ -3,6 +3,7 @@
 \usepackage{fullpage}
 \usepackage{pdfpages}
 \usepackage{float}
+\usepackage[hidelinks]{hyperref}
 
 \title{FACE soil-extractable nutrient results -Summary Stats-}
 \author{Shun Hasegawa}
@@ -21,13 +22,7 @@ opts_knit$set(root.dir=normalizePath('../'))
 # path to packrat library. knitr use local drive library as default
 
 source("R/pckg.R")
-source("R//functions.R")
-load("Output/Data/extractable.RData")
-source("R//SummaryExlTable.R")
-source("R//Figs.R")
-load("Data/FACE_TDR_ProbeDF.RData")
-TdrSoil <- subsetD(FACE_TDR_ProbeDF, Sample == "soil")
-load("Output/Data/LstDF_SoilVar.RData")
+load("Output/Data/AllObj.RData")
 @
 
 \maketitle
@@ -39,12 +34,10 @@ load("Output/Data/LstDF_SoilVar.RData")
 %%%
 %%%
 
-\section{Soil-extractable nutrients}
-
 %%%%%%%%%%%%%%%
 % summary fig %
 %%%%%%%%%%%%%%%
-\subsection{Summary results}
+\section{Summary results}
 \begin{center}
 \begin{figure}[!ht]\label{figure:FACE_Extractable_Allres}
 

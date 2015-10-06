@@ -4,10 +4,10 @@
 %% source files & libraries & setup options                                  %%
 %% need to be loaded here if one wants to compile this child document to PDF %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Nitrate}
+\section{Nitrate}
 
 %%% CO2 trt %%%
-\subsubsection{CO$_2$ trt}
+\subsection{CO$_2$ trt}
 
 \begin{figure}[!h]\label{figure:CO2Extractable_Nitrate}
 
@@ -30,10 +30,9 @@ printTbl(TrtSmmryTbl[[1]],
 %% Stats %%
 <<ReadScript_FACE_Extr_Nitrate, echo=FALSE, cache=FALSE, include=FALSE>>=
 read_chunk('R/Stats_NO.R')
-source("R/Stats_NO.R")
 @
 
-\paragraph{Stats}
+\subsubsection{Stats}
 \paragraph{Pre-CO$_2$}
 \noindent
 
@@ -64,7 +63,7 @@ source("R/Stats_NO.R")
 
 %%% Ring %%%
 \clearpage
-\subsubsection{Ring}
+\subsection{Ring}
 
 \begin{figure}[!h]\label{figure:RingExtractable_nitrate}
 \begin{center}
