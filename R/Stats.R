@@ -87,7 +87,7 @@ ContrastDF <- rbind(FACE_Extr_PostCO2_NH_CntrstDf)
 ContrastDF <- rbind.fill(ContrastDF, 
                          data.frame(date = as.Date("2012-06-13"), 
                                     time = 1, 
-                                    stars = '*',
+                                    stars = "'*'",
                                     p = "bold('0.024')",
                                     variable = "po"))
 
