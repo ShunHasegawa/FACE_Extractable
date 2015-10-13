@@ -47,6 +47,8 @@ load("output//data//FACE_extractable_CO2xTime_Stats.RData")
 
 # ymax value for each variable
 ymaxDF <- ddply(TrtMean, .(variable), function(x) max(x$Mean + x$SE, na.rm = TRUE))
+# adjust ymax
+ymaxDF[3, 2] <- 2.7
 
 # load contrastDF to annotate stat result and combine with max values from
 # TrtMean as y position
@@ -68,7 +70,12 @@ p <- WBFig(data = TrtMean,
   geom_text(data = Antt_CntrstDF, aes(x = date, y = yval, label = stars), 
             vjust = 0, parse = TRUE)
 
-ggsavePP(filename = "Output//Figs/FACE_Manuscript/FACE_Extractable", plot = p, 
+# adjust ymax
+p2 <- p + geom_blank(data = data.frame(date = as.Date(2012-06-13), 
+                                       varaible = "po", 
+                                       Mean = 2.7, 
+                                       co2 = "amb"))
+ggsavePP(filename = "Output//Figs/FACE_Manuscript/FACE_Extractable", plot = p2, 
          width = 6.65, height = 6.65)
 
 
