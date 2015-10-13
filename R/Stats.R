@@ -82,4 +82,13 @@ save(Stat_CO2Time, file = "Output//Data/FACE_extractable_CO2xTime_Stats.RData")
 ## Result of contrast ##
 ########################
 ContrastDF <- rbind(FACE_Extr_PostCO2_NH_CntrstDf)
+
+# Add pre-co2 contrast for phosphate
+ContrastDF <- rbind.fill(ContrastDF, 
+                         data.frame(date = as.Date("2012-06-13"), 
+                                    time = 1, 
+                                    stars = '*',
+                                    p = "bold('0.024')",
+                                    variable = "po"))
+
 save(ContrastDF, file = "Output//Data/FACE_Extractable_ContrastDF.RData")

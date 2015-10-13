@@ -172,7 +172,7 @@ WBFig <- function(data, ylab, facetLab = ylab_label, figTheme = science_theme,
     
   # df for sub labels
   subLabDF <- with(data, 
-                   data.frame(xv = as.Date("2012-6-21"),
+                   data.frame(xv = as.Date("2012-6-15"),
                               ddply(data, .(variable), summarise, yv = max(Mean + SE)),
                               labels = paste("(", letters[1:length(levels(variable))], ")",
                                              sep = ""),
@@ -215,7 +215,7 @@ WBFig <- function(data, ylab, facetLab = ylab_label, figTheme = science_theme,
                       labels = c("Ambient", expression(eCO[2]))) +
     scale_linetype_manual(values = c("solid", "dashed"), 
                           labels = c("Ambient", expression(eCO[2]))) +
-    geom_text(aes(x = xv, y = yv * .95, label = labels),
+    geom_text(aes(x = xv, y = yv * .98, label = labels),
               fontface = "bold",
               hjust = 1,
               data = subLabDF) +
@@ -666,10 +666,11 @@ source("R/rsquaredglmm.R")
 # Return star based on P value #
 ################################
 FormatPval <- function(Pval) {
-  stars <- ifelse(Pval > .05, "",
-                  ifelse(Pval > .01, "'*'",
-                         ifelse(Pval > .001, "'**'",
-                                c("'***'"))))
+  stars <- ifelse(Pval > .1, "",
+                  ifelse(Pval > .05, "scriptstyle('\u2020')",
+                         ifelse(Pval > .01, "'*'",
+                                ifelse(Pval > .001, "'**'",
+                                       c("'***'")))))
   
   p <- as.character(ifelse(Pval > .1, round(Pval, 3),
                            ifelse(Pval < .001, "bold('<0.001')", 
