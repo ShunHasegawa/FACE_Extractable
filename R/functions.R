@@ -736,3 +736,45 @@ StatPositionDF <- function(StatRes, variable, ytop, ylength, gap = .1){
   d3$co2 <- "amb" # co2 column is required for ggplot
   return(d3)
 }
+
+############################
+# Upload a filne onto HIEv #
+############################
+ # Format data frame for HIEv
+  create_hievdata <- function(data, variable, newvariable){
+    # change Date to date and variable to newvariable
+    names(data) <- ifelse(names(data) == "Date", "date", names(data))
+    names(data)[which(names(data) %in% variable)] <- newvariable
+    
+    # subset required variables
+    d <- data[, c("date", "ring", "plot", newvariable)]
+    return(d)
+  }
+
+ # Create file name for HIEv. See
+ # http://hie-dm.uws.edu.au/eucface-naming-conventions/ for more details
+  create_hivedata_filename <- function(hivedata, PROJECT, VARIABLE_COLLECTION_CODE, 
+                                     DATA_PROCESSING, VERSION = NULL){
+  # Date range
+  d_range <- gsub("-", "", as.character(range(hivedata$date)))
+  DATERANGE <- paste(d_range[1], d_range[2], sep = "-")
+  # file name
+  f_name <- paste("FACE_RA", PROJECT, VARIABLE_COLLECTION_CODE, DATA_PROCESSING, 
+                  DATERANGE, sep = "_")
+  if(!is.null(VERSION)) f_name <- paste(f_name, VERSION, sep = "_")
+  return(f_name)
+  }
+
+# Create meta-data file
+  create_metadata <- function(other_variables){
+    if(!identical(names(other_variables), c("Column", "Unit", "Description"))) {
+      print("Check column names. They have to match Column, Unit and Description")
+    } else {
+      meta_base_dd <- data.frame(Column      = c("date", "ring"), 
+                                 Unit        = c("Date", ""), 
+                                 Description = c("" , ""))
+      metadd <- rbind.fill(list(meta_base_dd, other_variables))
+      return(metadd)
+    }
+  }
+  

@@ -10,6 +10,9 @@ source("R//functions.R")
 # source("R/ProcessDF.R")
 load("Output//Data//extractable.RData")
 
+# create file for HIEv
+source("R/uploading_HIEv.R")
+
 # parcent change
 extr <- ddply(extr, .(ring, plot, co2, block, id), PerChange)
 # column names for % changes look "Delt.1.arithmetic" on console but actually
